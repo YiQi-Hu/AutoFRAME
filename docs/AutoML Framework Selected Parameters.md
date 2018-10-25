@@ -41,15 +41,15 @@ There are 3 types of parameters
 
 #### Parameters
 
-| Name                  | Type | Range                          |
-| --------------------- | ---- | ------------------------------ |
-| critetrion            | 2    | ['gini', 'entropy']            |
-| max_depth             | 1    | [0, 40]                        |
-| min_samples_split     | 1    | [1, 100]                       |
-| min_samples_leaf      | 1    | [1, 100]                       |
-| max_features          | 2    | ['auto', 'sqrt', 'log2', None] |
-| max_leaf_nodes        | 1    | [-1, 100]                      |
-| min_impurity_decrease | 0    | [0.0, 100.0]                   |
+| Name                  | Type | Range                  |
+| --------------------- | ---- | ---------------------- |
+| criterion             | 2    | ['gini', 'entropy']    |
+| max_depth             | 1    | [0, 40]                |
+| min_samples_split     | 1    | [1, 100]               |
+| min_samples_leaf      | 1    | [1, 100]               |
+| max_features          | 2    | ['sqrt', 'log2', None] |
+| max_leaf_nodes        | 1    | [-1, 100]              |
+| min_impurity_decrease | 0    | [0.0, 100.0]           |
 
 #### Example
 
@@ -64,7 +64,7 @@ There are 3 types of parameters
 
 | Name                  | Type | Range                          |
 | --------------------- | ---- | ------------------------------ |
-| critetrion            | 2    | ['gini', 'entropy']            |
+| criterion             | 2    | ['gini', 'entropy']            |
 | max_depth             | 1    | [0, 40]                        |
 | min_samples_split     | 1    | [1, 100]                       |
 | min_samples_leaf      | 1    | [1, 100]                       |
@@ -353,7 +353,7 @@ There are 3 types of parameters
 
 | Name         | Type | Range     |
 | ------------ | ---- | --------- |
-| n_estimators | 1    | [10 1000] |
+| n_estimators | 1    | [10, 1000] |
 | max_depth             | 1    | [0, 40]                        |
 | min_samples_split     | 1    | [1, 100]                       |
 | min_samples_leaf      | 1    | [1, 100]                       |
@@ -375,7 +375,7 @@ There are 3 types of parameters
 | Name      | Type | Range                    |
 | --------- | ---- | ------------------------ |
 | solver    | 2    | ['svd', 'lsqr', 'eigen'] |
-| shrinkage | 0    | [0, 1] or None           |
+| shrinkage | 0    | [0, 1]                   |
 | tol       | 0    | [1e-5, 1e-3]             |
 
 #### Example
