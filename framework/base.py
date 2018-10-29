@@ -174,3 +174,10 @@ class HyperParameter:
             return self._param_range[int(raw_param)]
         else:
             assert False
+
+    def retrieve_raw_param(self):
+        if self.param_type == _CATEGORICAL_PARAM:
+            return [0, 0, _CATEGORICAL_PARAM, list(range(len(self._param_range)))]
+        else:
+            lower_bound, upper_bound = self.param_bound
+            return [lower_bound, upper_bound, self.param_type, None]

@@ -4,7 +4,12 @@ import operator
 import datetime
 
 
-class SRacos:
+CONTINUOUS = 0
+DISCRETE = 1
+CATEGORICAL = 2
+
+
+class Optimizer:
 
     def __init__(self):
         pass
@@ -12,7 +17,7 @@ class SRacos:
     def opt(self, objective, dimension, budget, k, r, prob, max_coordinates):
         """
         Optimize the given objective.
-        :param objective: An object which has an eval method.
+        :param objective: A callable function which returns a value.
         :param dimension: A two dimensional list. See README.
         :param budget: Number of samples.
         :param k: Positive region size.
@@ -32,7 +37,7 @@ class SRacos:
                 x = self._sample_from_racos(dimension, positive_data, negative_data, max_coordinates)
             else:
                 x = self._uniform_sample_without_replicates(dimension, None, positive_data + negative_data, 1)
-            y = objective.eval(x)
+            y = objective(x)
             inferior = self._replace_wr((x, y), positive_data, 'pos')
             _ = self._replace_wr(inferior, negative_data, 'neg')
             best_solution = positive_data[0]
@@ -44,12 +49,11 @@ class SRacos:
         len_negative = len(negative_data)
         index_set = list(range(len(dimension)))
         types = list(map(lambda x: x[2], dimension))
-        order = list(map(lambda x: x[3], dimension))
         while len_negative > 0 and len(index_set) > 0:
             k = index_set[random.randint(0, len(index_set) - 1)]
             x_pos_k = x_positive[0][k]
             # continuous
-            if types[k] is True:
+            if types[k] == CONTINUOUS:
                 x_negative = negative_data[random.randint(0, len_negative - 1)]
                 x_neg_k = x_negative[0][k]
                 if x_pos_k < x_neg_k:
@@ -79,57 +83,59 @@ class SRacos:
                             else:
                                 i += 1
             # discrete
-            else:
-                if order[k] is True:
-                    x_negative = [random.randint(0, len_negative - 1)]
-                    x_neg_k = x_negative[0][k]
-                    if x_pos_k < x_neg_k:
-                        # different from continuous version
-                        r = random.randint(x_pos_k, x_neg_k - 1)
-                        if r < sample_region[k][1]:
-                            sample_region[k][1] = r
-                            i = 0
-                            while i < len_negative:
-                                if negative_data[i][0][k] >= r:
-                                    len_negative -= 1
-                                    itemp = negative_data[i]
-                                    negative_data[i] = negative_data[len_negative]
-                                    negative_data[len_negative] = itemp
-                                else:
-                                    i += 1
-                    else:
-                        r = random.randint(x_neg_k, x_pos_k)
-                        if r > sample_region[k][0]:
-                            sample_region[k][0] = r
-                            i = 0
-                            while i < len_negative:
-                                if negative_data[i][0][k] <= r:
-                                    len_negative -= 1
-                                    itemp = negative_data[i]
-                                    negative_data[i] = negative_data[len_negative]
-                                    negative_data[len_negative] = itemp
-                                else:
-                                    i += 1
+            elif types[k] == DISCRETE:
+                x_negative = negative_data[random.randint(0, len_negative - 1)]
+                x_neg_k = x_negative[0][k]
+                if x_pos_k < x_neg_k:
+                    # different from continuous version
+                    r = random.randint(x_pos_k, x_neg_k - 1)
+                    if r < sample_region[k][1]:
+                        sample_region[k][1] = r
+                        i = 0
+                        while i < len_negative:
+                            if negative_data[i][0][k] >= r:
+                                len_negative -= 1
+                                itemp = negative_data[i]
+                                negative_data[i] = negative_data[len_negative]
+                                negative_data[len_negative] = itemp
+                            else:
+                                i += 1
                 else:
-                    delete = 0
-                    i = 0
-                    while i < len_negative:
-                        if negative_data[i][0][k] != x_pos_k:
-                            len_negative -= 1
-                            delete += 1
-                            itemp = negative_data[i]
-                            negative_data[i] = negative_data[len_negative]
-                            negative_data[len_negative] = itemp
-                        else:
-                            i += 1
-                    if delete != 0:
-                        index_set.remove(k)
-        while len(index_set) > max_coordinated:
-            k = index_set[random.randint(0, len(index_set) - 1)]
-            sample_region[k][0] = x_positive[0][k]
-            sample_region[k][1] = x_positive[0][k]
-            sample_region[k][4] = [x_positive[0][k], ]
-            index_set.remove(k)
+                    r = random.randint(x_neg_k, x_pos_k)
+                    if r > sample_region[k][0]:
+                        sample_region[k][0] = r
+                        i = 0
+                        while i < len_negative:
+                            if negative_data[i][0][k] <= r:
+                                len_negative -= 1
+                                itemp = negative_data[i]
+                                negative_data[i] = negative_data[len_negative]
+                                negative_data[len_negative] = itemp
+                            else:
+                                i += 1
+            elif types[k] == CATEGORICAL:
+                delete = 0
+                i = 0
+                while i < len_negative:
+                    if negative_data[i][0][k] != x_pos_k:
+                        len_negative -= 1
+                        delete += 1
+                        itemp = negative_data[i]
+                        negative_data[i] = negative_data[len_negative]
+                        negative_data[len_negative] = itemp
+                    else:
+                        i += 1
+                if delete != 0:
+                    index_set.remove(k)
+            else:
+                raise ValueError
+        if len(index_set) > max_coordinated:
+            indices_list = random.sample(index_set, len(index_set) - max_coordinated)
+            for k in indices_list:
+                sample_region[k][0] = x_positive[0][k]
+                sample_region[k][1] = x_positive[0][k]
+                sample_region[k][3] = [x_positive[0][k], ]
+                index_set.remove(k)
         x_list = [x[0] for x in positive_data] + [x[0] for x in negative_data]
         return self._uniform_sample_without_replicates(sample_region, x_positive, x_list, 1)
 
@@ -137,16 +143,18 @@ class SRacos:
     def _uniform_sample(dimension, x_pos):
         x = list()
         for i in range(len(dimension)):
-            if dimension[i][2] is True:
+            if dimension[i][2] == CONTINUOUS:
                 value = random.uniform(dimension[i][0], dimension[i][1])
-            elif dimension[i][3] is True:
+            elif dimension[i][2] == DISCRETE:
                 value = random.randint(dimension[i][0], dimension[i][1])
-            else:
+            elif dimension[i][2] == CATEGORICAL:
                 if x_pos is None:
-                    rand_index = random.randint(0, len(dimension[i][4]) - 1)
-                    value = dimension[i][4][rand_index]
+                    rand_index = random.randint(0, len(dimension[i][3]) - 1)
+                    value = dimension[i][3][rand_index]
                 else:
                     value = x_pos[0][i]
+            else:
+                raise ValueError
             x.append(value)
         return x
 
@@ -181,7 +189,7 @@ class SRacos:
 
     @staticmethod
     def _evaluate_list(x_list, objective):
-        return [(x, objective.eval(x)) for x in x_list]
+        return [(x, objective(x)) for x in x_list]
 
     @staticmethod
     def _selection(data, k):
