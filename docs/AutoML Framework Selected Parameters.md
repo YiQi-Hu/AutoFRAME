@@ -29,26 +29,34 @@
       * [XGBoost](#xgboost)
          * [XGBoostClassifier](#xgboostclassifier)
 
+
+
 There are 3 types of parameters
 
 - 0 --> float
 - 1 --> integer
 - 2 --> categorical
 
+All intervals in `Range` are closed intervals
+
 ## Scikit-Learn Model
 
+---
+
 ### DecisionTreeClassifier
+
+---
 
 #### Parameters
 
 | Name                  | Type | Range                  |
 | --------------------- | ---- | ---------------------- |
 | criterion             | 2    | ['gini', 'entropy']    |
-| max_depth             | 1    | [0, 40]                |
+| max_depth             | 1    | [1, 40]                |
 | min_samples_split     | 1    | [1, 100]               |
 | min_samples_leaf      | 1    | [1, 100]               |
 | max_features          | 2    | ['sqrt', 'log2', None] |
-| max_leaf_nodes        | 1    | [-1, 100]              |
+| max_leaf_nodes        | 1    | [1, 100]               |
 | min_impurity_decrease | 0    | [0.0, 100.0]           |
 
 #### Example
@@ -59,6 +67,8 @@ There are 3 types of parameters
 ```
 
 ### ExtraTreeClassifier
+
+---
 
 #### Parameters
 
@@ -81,6 +91,8 @@ There are 3 types of parameters
 
 ### SVC
 
+---
+
 #### Parameters 
 
 | Name      | Type | Range                                               |
@@ -101,6 +113,8 @@ There are 3 types of parameters
 ```
 
 ### NuSVC
+
+---
 
 #### Parameters 
 
@@ -123,6 +137,8 @@ There are 3 types of parameters
 
 ### LinearSVC
 
+---
+
 #### Paramters
 
 | Name    | Type | Range                      |
@@ -141,6 +157,8 @@ There are 3 types of parameters
 ```
 
 ### KNeighbors
+
+---
 
 #### Parameters
 
@@ -161,6 +179,8 @@ There are 3 types of parameters
 
 ### RadiusNeighbors
 
+---
+
 #### Parameters
 
 | Name   | Type | Range       |
@@ -179,6 +199,8 @@ There are 3 types of parameters
 ```
 
 ### LogisticRegression
+
+---
 
 #### Paramters
 
@@ -200,6 +222,8 @@ There are 3 types of parameters
 ```
 
 ### SGDClassifier
+
+---
 
 #### Parameters
 
@@ -224,6 +248,8 @@ There are 3 types of parameters
 
 ### RidgeClassifier
 
+---
+
 #### Parameters
 
 | Name     | Type | Range                                                   |
@@ -242,6 +268,8 @@ There are 3 types of parameters
 
 ### PassiveAggressiveClassifier
 
+---
+
 #### Parameters
 
 | Name     | Type | Range                      |
@@ -259,6 +287,8 @@ There are 3 types of parameters
 ```
 
 ### Perceptron
+
+---
 
 #### Parameters
 
@@ -279,6 +309,8 @@ There are 3 types of parameters
 
 ### GaussianProcessClassifier
 
+---
+
 #### Parameters
 
 | Name             | Type | Range      |
@@ -293,6 +325,8 @@ There are 3 types of parameters
 ```
 
 ### AdaBoostClassifier
+
+---
 
 #### Parameters 
 
@@ -311,6 +345,8 @@ There are 3 types of parameters
 
 ### BaggingClassifier
 
+---
+
 #### Parameters
 
 | Name         | Type | Range      |
@@ -326,6 +362,8 @@ There are 3 types of parameters
 ```
 
 ### ExtraTreesClassifier
+
+---
 
 #### Parameters
 
@@ -349,6 +387,8 @@ There are 3 types of parameters
 
 ### RandomForest
 
+---
+
 #### Parameters
 
 | Name         | Type | Range     |
@@ -370,6 +410,8 @@ There are 3 types of parameters
 
 ### LinearDiscriminantAnalysis
 
+---
+
 #### Parameters
 
 | Name      | Type | Range                    |
@@ -387,7 +429,9 @@ There are 3 types of parameters
 
 ### QuadraticDiscriminantAnalysis
 
-#### Prameters
+---
+
+#### Parameters
 
 | Name      | Type | Range        |
 | --------- | ---- | ------------ |
@@ -402,6 +446,8 @@ There are 3 types of parameters
 
 ### GaussianNB
 
+---
+
 #### Parameters
 
 | Name          | Type | Range         |
@@ -415,6 +461,8 @@ There are 3 types of parameters
 ```
 
 ### BernoulliNB
+
+---
 
 #### Parameters
 
@@ -431,6 +479,8 @@ There are 3 types of parameters
 
 ### MultinomialNB
 
+---
+
 #### Parameters
 
 | Name  | Type | Range       |
@@ -445,7 +495,11 @@ There are 3 types of parameters
 
 ## LightGBM
 
+---
+
 ### LGBMClassifier
+
+---
 
 #### Parameters
 
@@ -478,7 +532,11 @@ The meanings of the parameters please refer to [LightGBM Documentation](https://
 
 ## XGBoost
 
+---
+
 ### XGBoostClassifier
+
+---
 
 #### Parameters
 

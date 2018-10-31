@@ -9,9 +9,9 @@ from sklearn.model_selection import StratifiedKFold
 
 import abc
 
-_FLOAT_PARAM = 0
-_INTEGER_PARAM = 1
-_CATEGORICAL_PARAM = 2
+FLOAT = 0
+INTEGER = 1
+CATEGORICAL = 2
 
 
 def data_collector(index_list, features, labels):
@@ -23,6 +23,9 @@ def data_collector(index_list, features, labels):
     :return: the features and labels collected by index_list
     """
 
+    assert len(features.shape) == 2
+    assert len(labels.shape) == 1
+
     feature_dim = features.shape[1]
 
     trans_features = np.zeros((len(index_list), feature_dim))
@@ -30,7 +33,7 @@ def data_collector(index_list, features, labels):
 
     for i in range(len(index_list)):
         trans_features[i, :] = features[index_list[i], :]
-        trans_labels[i] = labels[index_list[i], :]
+        trans_labels[i] = labels[index_list[i]]
 
     return trans_features, trans_labels
 
@@ -93,6 +96,10 @@ class ModelGenerator:
         self.hp_space = hp_space
         self._model_initializer = model_initializer
 
+    @property
+    def raw_dimension(self):
+        return [param.retrieve_raw_param() for param in self.hp_space]
+
     @abc.abstractmethod
     def generate_model(self, param_values):
         return
@@ -107,15 +114,15 @@ class HyperParameter:
 
     @classmethod
     def int_param(cls, name, param_range):
-        return cls(name, param_range, _INTEGER_PARAM)
+        return cls(name, param_range, INTEGER)
 
     @classmethod
     def float_param(cls, name, param_range):
-        return cls(name, param_range, _FLOAT_PARAM)
+        return cls(name, param_range, FLOAT)
 
     @classmethod
     def categorical_param(cls, name, param_range):
-        return cls(name, param_range, _CATEGORICAL_PARAM)
+        return cls(name, param_range, CATEGORICAL)
 
     @property
     def param_bound(self):
@@ -123,14 +130,12 @@ class HyperParameter:
 
         Returns
         -------
-        lower_bound: int or float
-            lower_bound is inclusive
-        upper_bound: int or float
-            if parameter is categorical, the upper_bound is exclusive,
-            otherwise the upper_bound is inclusive
+        bound: tuple of int or tuple of float
+            lower_bound and higher_bound are both inclusive if
+            parameter's type is int or float
         """
-        if self.param_type == _CATEGORICAL_PARAM:
-            return 0, len(self._param_range)
+        if self.param_type == CATEGORICAL:
+            return 0, len(self._param_range) - 1
         else:
             return self._param_range
 
@@ -147,7 +152,7 @@ class HyperParameter:
         is_in_range: bool
             True if value is in range
         """
-        if self.param_type == _CATEGORICAL_PARAM:
+        if self.param_type == CATEGORICAL:
             return 0 <= int(value) < len(self._param_range)
         else:
             assert len(self._param_range) == 2
@@ -166,18 +171,27 @@ class HyperParameter:
         param : str or int or float
             casted value
         """
-        if self.param_type == _INTEGER_PARAM:
+        if self.param_type == INTEGER:
             return int(raw_param)
-        elif self.param_type == _FLOAT_PARAM:
+        elif self.param_type == FLOAT:
             return float(raw_param)
-        elif self.param_type == _CATEGORICAL_PARAM:
+        elif self.param_type == CATEGORICAL:
             return self._param_range[int(raw_param)]
         else:
             assert False
 
     def retrieve_raw_param(self):
-        if self.param_type == _CATEGORICAL_PARAM:
-            return [0, 0, _CATEGORICAL_PARAM, list(range(len(self._param_range)))]
+        if self.param_type == CATEGORICAL:
+            return [0, 0, CATEGORICAL, list(range(len(self._param_range)))]
         else:
             lower_bound, upper_bound = self.param_bound
             return [lower_bound, upper_bound, self.param_type, None]
+
+    def is_int_type(self):
+        return self.param_type == INTEGER
+
+    def is_float_type(self):
+        return self.param_type == FLOAT
+
+    def is_categorical_type(self):
+        return self.param_type == CATEGORICAL
