@@ -8,15 +8,15 @@ def func(x):
     return s ** 0.5
 
 
-# dimension = [[-3, 3, True, True, None],
-#              [-3, 3, True, True, None],
-#              [-3, 3, True, True, None]]
-dimension = [[-50, 70, False, True, [3, -2, 1, 7]],
-             [-30, 30, False, True, [-1, 2, -3, 3]],
-             [-60, 50, False, True, [4, 5, -2, 1]]]
-# dimension = [[-50, 70, False, False, [3, -2, 1, 7]],
-#              [-30, 30, False, False, [-1, 2, -3, 3]],
-#              [-60, 50, False, False, [4, 5, -2, 1]]]
-sracos = SRacos()
-x, y = sracos.opt(func, dimension, 10000, 10, 20, 0.5, 1)
+# dimension = [[-3, 3, SRacos.CONTINUOUS, None],
+#              [-3, 3, SRacos.CONTINUOUS, None],
+#              [-3, 3, SRacos.CONTINUOUS, None]]
+# dimension = [[-50, 70, SRacos.DISCRETE, [3, -2, 1, 7]],
+#              [-30, 30, SRacos.DISCRETE, [-1, 2, -3, 3]],
+#              [-60, 50, SRacos.DISCRETE, [4, 5, -2, 1]]]
+dimension = [[-50, 70, SRacos.CONTINUOUS, [3, -2, 1, 7]],
+             [-30, 30, SRacos.CATEGORICAL, [-1, 2, -3, 3]],
+             [-60, 50, SRacos.CATEGORICAL, [4, 5, -2, 1]]]
+sracos = SRacos.Optimizer()
+x, y = sracos.opt(func, dimension, 1000, 10, 20, 0.5, 1)
 print(x, y)

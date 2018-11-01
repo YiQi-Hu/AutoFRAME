@@ -14,5 +14,5 @@ dimension = [param.retrieve_raw_param() for param in model.hp_space]
 
 sracos = SRacos.Optimizer()
 x, y = sracos.opt(objective=evaluator.evaluate,
-                  dimension=dimension, budget=10000, k=3, r=5, prob=0.99, max_coordinates=2)
+                  dimension=dimension, budget=100, k=3, r=5, prob=0.99, max_coordinates=2, print_opt=True)
 print(x, y)

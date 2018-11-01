@@ -8,13 +8,15 @@ CONTINUOUS = 0
 DISCRETE = 1
 CATEGORICAL = 2
 
+_SAMPLE_TIME = 0.0001       # Maximum time for a simple sample
+
 
 class Optimizer:
 
     def __init__(self):
         pass
 
-    def opt(self, objective, dimension, budget, k, r, prob, max_coordinates):
+    def opt(self, objective, dimension, budget, k, r, prob, max_coordinates, print_opt=False):
         """
         Optimize the given objective.
         :param objective: A callable function which returns a value.
@@ -24,6 +26,7 @@ class Optimizer:
         :param r: Pool size.
         :param prob: Probability to sample from positive region.
         :param max_coordinates: Maximum number of uncertain coordinates.
+        :param print_opt: Whether to print opt procedures or not.
         :return: The best solution, a tuple (x, f(x)).
         """
         if k < 1 or k >= r or r > budget:
@@ -34,16 +37,24 @@ class Optimizer:
         best_solution = positive_data[0]
         for t in range(budget - r):
             if random.random() < prob:
-                x = self._sample_from_racos(dimension, positive_data, negative_data, max_coordinates)
+                x = self._sample_from_racos_with_retry(dimension, positive_data, negative_data, max_coordinates)
             else:
                 x = self._uniform_sample_without_replicates(dimension, None, positive_data + negative_data, 1)
             y = objective(x)
             inferior = self._replace_wr((x, y), positive_data, 'pos')
             _ = self._replace_wr(inferior, negative_data, 'neg')
             best_solution = positive_data[0]
+            if print_opt is True:
+                print(best_solution)
         return best_solution
 
-    def _sample_from_racos(self, dimension, positive_data, negative_data, max_coordinated):
+    def _sample_from_racos_with_retry(self, dimension, positive_data, negative_data, max_coordinates):
+        x = None
+        while x is None:
+            x = self._sample_from_racos(dimension, positive_data, negative_data, max_coordinates)
+        return x
+
+    def _sample_from_racos(self, dimension, positive_data, negative_data, max_coordinates):
         sample_region = copy.deepcopy(dimension)
         x_positive = positive_data[random.randint(0, len(positive_data) - 1)]
         len_negative = len(negative_data)
@@ -129,8 +140,8 @@ class Optimizer:
                     index_set.remove(k)
             else:
                 raise ValueError
-        if len(index_set) > max_coordinated:
-            indices_list = random.sample(index_set, len(index_set) - max_coordinated)
+        if len(index_set) > max_coordinates:
+            indices_list = random.sample(index_set, len(index_set) - max_coordinates)
             for k in indices_list:
                 sample_region[k][0] = x_positive[0][k]
                 sample_region[k][1] = x_positive[0][k]
@@ -166,9 +177,8 @@ class Optimizer:
             x = self._uniform_sample(dimension, x_pos)
             while any([operator.eq(x, t) for t in data]):
                 current_time = datetime.datetime.now()
-                if (current_time - start_time).total_seconds() > 1:
-                    print('timeout')
-                    exit(-1)
+                if (current_time - start_time).total_seconds() > _SAMPLE_TIME:
+                    return None
                 x = self._uniform_sample(dimension, x_pos)
             return x
         elif num > 1:
@@ -178,9 +188,8 @@ class Optimizer:
                 x = self._uniform_sample(dimension, x_pos)
                 while any([operator.eq(x, t) for t in data + x_list]):
                     current_time = datetime.datetime.now()
-                    if (current_time - start_time).total_seconds() > 1:
-                        print('timeout')
-                        exit(-1)
+                    if (current_time - start_time).total_seconds() > _SAMPLE_TIME:
+                        return None
                     x = self._uniform_sample(dimension, x_pos)
                 x_list.append(x)
             return x_list
