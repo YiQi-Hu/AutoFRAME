@@ -1,5 +1,11 @@
-import sklearn.tree, sklearn.svm, sklearn.neighbors, sklearn.linear_model, sklearn.naive_bayes, \
-    sklearn.gaussian_process, sklearn.ensemble, sklearn.discriminant_analysis
+import sklearn.discriminant_analysis
+import sklearn.ensemble
+import sklearn.gaussian_process
+import sklearn.linear_model
+import sklearn.naive_bayes
+import sklearn.neighbors
+import sklearn.svm
+import sklearn.tree
 
 from framework.base import ModelGenerator, HyperParameter
 
@@ -17,7 +23,7 @@ class SKLearnModelGenerator(ModelGenerator):
             if not param.in_range(value):
                 raise ValueError('Value of parameter {} is not in range'.format(param.name))
 
-            assert hasattr(model, param.name)
+            assert hasattr(model, param.name), 'model is {}, invalid parameter is {}'.format(model, param.name)
             setattr(model, param.name, param.convert_raw_param(value))
 
         return model
@@ -49,7 +55,7 @@ class ExtraTree(SKLearnModelGenerator):
             HyperParameter.int_param('min_samples_split', (1, 100)),
             HyperParameter.int_param('min_samples_leaf', (1, 100)),
             HyperParameter.categorical_param('max_features', ('sqrt', 'log2', None)),
-            HyperParameter.int_param('max_leaf_nodes', (1, 100)),
+            HyperParameter.int_param('max_leaf_nodes', (2, 100)),
             HyperParameter.float_param('min_impurity_decrease', (0., 100.))
         ]
 
@@ -231,7 +237,7 @@ class AdaBoost(SKLearnModelGenerator):
     def __init__(self):
         hp_space = [
             HyperParameter.int_param('n_estimators', (30, 500)),
-            HyperParameter.float_param('learning_rate', (0.1, 10.)),
+            HyperParameter.float_param('learning_rate', (0.1, 2.)),
             HyperParameter.categorical_param('algorithm', ('SAMME', 'SAMME.R'))
         ]
 
@@ -257,8 +263,8 @@ class ExtraTrees(SKLearnModelGenerator):
     def __init__(self):
         hp_space = [
             HyperParameter.int_param('n_estimators', (5, 1000)),
-            HyperParameter.categorical_param('critetion', ('gini', 'entropy')),
-            HyperParameter.int_param('max_depth', (0, 40)),
+            HyperParameter.categorical_param('criterion', ('gini', 'entropy')),
+            HyperParameter.int_param('max_depth', (2, 40)),
             HyperParameter.int_param('min_samples_split', (1, 100)),
             HyperParameter.int_param('min_samples_leaf', (1, 100)),
             HyperParameter.categorical_param('max_features', ('sqrt', 'log2', None)),
