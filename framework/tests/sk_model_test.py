@@ -2,6 +2,9 @@ import inspect
 import logging
 import time
 import random
+import signal
+import sys
+import os.path
 
 import framework.base as base
 import framework.sk_models as sk
@@ -11,18 +14,12 @@ from utils.loader import dataset_reader
 # --------------------------------------------------------
 # define a logger
 
-
 def _init_logger():
     logger = logging.getLogger('AutoML_Random_Search')
     logger.setLevel(logging.INFO)
 
-    file_handler = logging.FileHandler('/Users/jundaliao/Desktop/AutoML.log')
+    file_handler = logging.FileHandler('AutoML.log')
     file_handler.setLevel(logging.INFO)
-
-    simple_format_file_handler = logging.FileHandler('/User/jundaliao/Desktop/AutoML_Simple.log')
-    simple_format_file_handler.setLevel(logging.INFO)
-    simple_format = logging.Formatter('%(message)s')
-    simple_format_file_handler.setFormatter(simple_format)
 
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.INFO)
@@ -33,12 +30,18 @@ def _init_logger():
 
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)
-    logger.addHandler(simple_format_file_handler)
 
     return logger
 
 
 log = _init_logger()
+
+
+def timeout_handler(signum, frame):
+    raise Exception("Timeout!")
+
+
+signal.signal(signal.SIGALRM, timeout_handler)
 
 
 def random_search(model_generator, train_x, train_y, search_times=100):
@@ -50,7 +53,11 @@ def random_search(model_generator, train_x, train_y, search_times=100):
         pattern = '[{}]: parameters: {}, accuracy: {:.5%}, time: {}s'
         try:
             start = time.time()
+            signal.alarm(120)
+
             accuracy = evaluator.evaluate(params)
+
+            signal.alarm(0)
             elapsed = time.time() - start
 
             log.info(pattern.format(name, params, float(accuracy), elapsed))
@@ -82,7 +89,8 @@ def random_sample_parameters(hp_space):
 
 if __name__ == '__main__':
 
-    data_file = '/Users/jundaliao/Documents/AutoML/AutoFRAME/temp_dataset/adult/adult_train_data.pkl'
+    my_path = os.path.abspath(os.path.dirname(__file__))
+    data_file = os.path.join(my_path, '../../temp_dataset/adult/adult_train_data.pkl')
     x, y = dataset_reader(data_file)
     # model = sk.LinearDiscriminantAnalysis()
     model = sk.AdaBoost()
