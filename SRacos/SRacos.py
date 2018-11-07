@@ -31,7 +31,7 @@ class Optimizer:
         """
         if k < 1 or k >= r or r > budget:
             raise ValueError
-        x_list = self._uniform_sample_without_replicates(dimension, None, None, r)
+        x_list = self._uniform_sample_without_replicates(dimension, None, r)
         data = self._evaluate_list(x_list, objective)
         positive_data, negative_data = self._selection(data, k)
         best_solution = positive_data[0]
@@ -39,7 +39,7 @@ class Optimizer:
             if random.random() < prob:
                 x = self._sample_from_racos_with_retry(dimension, positive_data, negative_data, max_coordinates)
             else:
-                x = self._uniform_sample_without_replicates(dimension, None, positive_data + negative_data, 1)
+                x = self._uniform_sample_without_replicates(dimension, positive_data + negative_data, 1)
             y = objective(x)
             inferior = self._replace_wr((x, y), positive_data, 'pos')
             _ = self._replace_wr(inferior, negative_data, 'neg')
@@ -138,6 +138,7 @@ class Optimizer:
                         i += 1
                 if delete != 0:
                     index_set.remove(k)
+                    sample_region[k][3] = [x_positive[0][k], ]
             else:
                 raise ValueError
         if len(index_set) > max_coordinates:
@@ -148,10 +149,10 @@ class Optimizer:
                 sample_region[k][3] = [x_positive[0][k], ]
                 index_set.remove(k)
         x_list = [x[0] for x in positive_data] + [x[0] for x in negative_data]
-        return self._uniform_sample_without_replicates(sample_region, x_positive, x_list, 1)
+        return self._uniform_sample_without_replicates(sample_region, x_list, 1)
 
     @staticmethod
-    def _uniform_sample(dimension, x_pos):
+    def _uniform_sample(dimension):
         x = list()
         for i in range(len(dimension)):
             if dimension[i][2] == CONTINUOUS:
@@ -159,38 +160,35 @@ class Optimizer:
             elif dimension[i][2] == DISCRETE:
                 value = random.randint(dimension[i][0], dimension[i][1])
             elif dimension[i][2] == CATEGORICAL:
-                if x_pos is None:
-                    rand_index = random.randint(0, len(dimension[i][3]) - 1)
-                    value = dimension[i][3][rand_index]
-                else:
-                    value = x_pos[0][i]
+                rand_index = random.randint(0, len(dimension[i][3]) - 1)
+                value = dimension[i][3][rand_index]
             else:
                 raise ValueError
             x.append(value)
         return x
 
-    def _uniform_sample_without_replicates(self, dimension, x_pos, data, num):
+    def _uniform_sample_without_replicates(self, dimension, data, num):
         if data is None:
             data = list()
         if num == 1:
             start_time = datetime.datetime.now()
-            x = self._uniform_sample(dimension, x_pos)
+            x = self._uniform_sample(dimension)
             while any([operator.eq(x, t) for t in data]):
                 current_time = datetime.datetime.now()
                 if (current_time - start_time).total_seconds() > _SAMPLE_TIME:
                     return None
-                x = self._uniform_sample(dimension, x_pos)
+                x = self._uniform_sample(dimension)
             return x
         elif num > 1:
             x_list = list()
             for i in range(num):
                 start_time = datetime.datetime.now()
-                x = self._uniform_sample(dimension, x_pos)
+                x = self._uniform_sample(dimension)
                 while any([operator.eq(x, t) for t in data + x_list]):
                     current_time = datetime.datetime.now()
                     if (current_time - start_time).total_seconds() > _SAMPLE_TIME:
                         return None
-                    x = self._uniform_sample(dimension, x_pos)
+                    x = self._uniform_sample(dimension)
                 x_list.append(x)
             return x_list
         else:
