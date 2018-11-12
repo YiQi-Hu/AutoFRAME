@@ -68,7 +68,7 @@ class SVC(SKLearnModelGenerator):
     def __init__(self):
         hp_space = [
             HyperParameter.float_param('C', (0.01, 1e6)),
-            HyperParameter.categorical_param('kernel', ('linear', 'poly', 'rbf', 'sigmoid', 'precomputed')),
+            HyperParameter.categorical_param('kernel', ('linear', 'poly', 'rbf', 'sigmoid')),
             HyperParameter.int_param('degree', (1, 30)),
             HyperParameter.float_param('gamma', (1e-5, 10)),
             HyperParameter.float_param('coef0', (0., 100.)),
@@ -85,7 +85,7 @@ class NuSVC(SKLearnModelGenerator):
     def __init__(self):
         hp_space = [
             HyperParameter.float_param('nu', (5e-3, 1)),
-            HyperParameter.categorical_param('kernel', ('linear', 'poly', 'rbf', 'sigmoid', 'precomputed')),
+            HyperParameter.categorical_param('kernel', ('linear', 'poly', 'rbf', 'sigmoid')),
             HyperParameter.int_param('degree', (1, 30)),
             HyperParameter.float_param('gamma', (1e-5, 10)),
             HyperParameter.float_param('coef0', (0., 100.)),
@@ -131,7 +131,7 @@ class RadiusNeighbors(SKLearnModelGenerator):
 
     def __init__(self):
         hp_space = [
-            HyperParameter.float_param('radius', (1e-2, 1e2)),
+            HyperParameter.float_param('radius', (1e-2, 1e3)),
             HyperParameter.categorical_param('weights', ('uniform', 'distance')),
             HyperParameter.categorical_param('algorithm', ('ball_tree', 'kd_tree', 'brute')),
             HyperParameter.int_param('leaf_size', (3, 100)),
@@ -147,10 +147,41 @@ class LogisticRegression(SKLearnModelGenerator):
     def __init__(self):
         hp_space = [
             HyperParameter.categorical_param('penalty', ('l1', 'l2')),
-            HyperParameter.categorical_param('dual', (True, False)),
             HyperParameter.float_param('tol', (1e-6, 1e-1)),
             HyperParameter.float_param('C', (1e-2, 1e2)),
-            HyperParameter.categorical_param('solver', ('newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga')),
+            HyperParameter.categorical_param('solver', ('saga', 'liblinear')),
+            HyperParameter.int_param('max_iter', (100, 1000)),
+            HyperParameter.categorical_param('multi_class', ('ovr', 'multinomial'))
+        ]
+
+        initializer = sklearn.linear_model.LogisticRegression
+        super().__init__(hp_space, initializer)
+
+
+class DualLibLinearLogisticRegression(SKLearnModelGenerator):
+
+    def __init__(self):
+        hp_space = [
+            HyperParameter.categorical_param('penalty', ('l2',)),
+            HyperParameter.categorical_param('dual', (True,)),
+            HyperParameter.float_param('tol', (1e-6, 1e-1)),
+            HyperParameter.float_param('C', (1e-2, 1e2)),
+            HyperParameter.categorical_param('solver', ('liblinear',)),
+            HyperParameter.int_param('max_iter', (100, 1000)),
+            HyperParameter.categorical_param('multi_class', ('ovr', 'multinomial'))
+        ]
+
+        initializer = sklearn.linear_model.LogisticRegression
+        super().__init__(hp_space, initializer)
+
+
+class L2PenaltyLogisticRegression(SKLearnModelGenerator):
+
+    def __init__(self):
+        hp_space = [
+            HyperParameter.float_param('tol', (1e-6, 1e-1)),
+            HyperParameter.float_param('C', (1e-2, 1e2)),
+            HyperParameter.categorical_param('solver', ('newton-cg', 'lbfgs', 'sag')),
             HyperParameter.int_param('max_iter', (100, 1000)),
             HyperParameter.categorical_param('multi_class', ('ovr', 'multinomial'))
         ]
@@ -290,19 +321,6 @@ class RandomForest(SKLearnModelGenerator):
         ]
 
         initializer = sklearn.ensemble.RandomForestClassifier
-        super().__init__(hp_space, initializer)
-
-
-class LinearDiscriminantAnalysis(SKLearnModelGenerator):
-
-    def __init__(self):
-        hp_space = [
-            HyperParameter.categorical_param('solver', ('svd', 'lsqr', 'eigen')),
-            HyperParameter.float_param('shrinkage', (0, 1)),
-            HyperParameter.float_param('tol', (1e-5, 1e-3))
-        ]
-
-        initializer = sklearn.discriminant_analysis.LinearDiscriminantAnalysis
         super().__init__(hp_space, initializer)
 
 
