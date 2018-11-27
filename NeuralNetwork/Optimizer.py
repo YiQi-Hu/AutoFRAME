@@ -7,7 +7,7 @@ Author: Ting Bao
 
 import numpy as np
 import tensorflow.train
-from framework.base import HyperParameter,ModelGenerator
+from NeuralNetwork.base import HyperParameter,ModelGenerator
 
 
 #the definition of this class is the same of "SKLearnModelGenerator" 
