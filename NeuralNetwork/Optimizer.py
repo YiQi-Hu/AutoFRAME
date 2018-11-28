@@ -1,13 +1,13 @@
 """
 this file covers optimizers in tf.train.
 the range of the paramter is all closed.
-use (1e-15,upperboundary) to imply the parameter should be larger than 0.
+use (1e-6,upperboundary) to imply the parameter should be larger than 0.
 Author: Ting Bao
 """
 
 import numpy as np
 import tensorflow.train
-from NeuralNetwork.base import HyperParameter,ModelGenerator
+from framework.base import HyperParameter,ModelGenerator
 
 
 #the definition of this class is the same of "SKLearnModelGenerator" 
@@ -33,7 +33,7 @@ class OptimizerGenerator(ModelGenerator):
 class GradientDescentOptimizer(OptimizerGenerator):
     def __init__(self):
         hp_space = [
-            HyperParameter.float_param('learning_rate', (1e-15, 1.)),
+            HyperParameter.float_param('learning_rate', (1e-6, 0.15)),
             HyperParameter.categorical_param('use_locking', (True, False))
         ]
 
@@ -44,9 +44,9 @@ class GradientDescentOptimizer(OptimizerGenerator):
 class AdadeltaOptimizer(OptimizerGenerator):
     def __init__(self):
         hp_space = [
-            HyperParameter.float_param('learning_rate', (1e-15, 1.)),
-            HyperParameter.float_param('rho', (1e-15, 1.)),#recheck needed
-            HyperParameter.float_param('epsilon', (1e-15, 0.1)),#wider range is allowed but not suggested
+            HyperParameter.float_param('learning_rate', (1e-6, 0.15)),
+            HyperParameter.float_param('rho', (1e-6, 1.)),#recheck needed
+            HyperParameter.float_param('epsilon', (1e-6, 0.1)),#wider range is allowed but not suggested
             HyperParameter.categorical_param('use_locking', (True, False))
         ]
 
@@ -57,8 +57,8 @@ class AdadeltaOptimizer(OptimizerGenerator):
 class AdagradOptimizer(OptimizerGenerator):
     def __init__(self):
         hp_space = [
-            HyperParameter.float_param('learning_rate', (1e-15, 1.)),
-            HyperParameter.float_param('initial_accumulator_value', (1e-15, 2.)),
+            HyperParameter.float_param('learning_rate', (1e-6, 0.15)),
+            HyperParameter.float_param('initial_accumulator_value', (1e-6, 2.)),
             HyperParameter.categorical_param('use_locking', (True, False))
         ]
 
@@ -69,9 +69,9 @@ class AdagradOptimizer(OptimizerGenerator):
 class AdagradDAOptimizer(OptimizerGenerator):
     def __init__(self):
         hp_space = [
-            HyperParameter.float_param('learning_rate', (1e-15, 1.)),
+            HyperParameter.float_param('learning_rate', (1e-6, 0.15)),
             HyperParameter.int_param('global_step', (0, 1e9)),
-            HyperParameter.float_param('initial_gradient_squared_accumulator_value', (1e-15, 1.)),
+            HyperParameter.float_param('initial_gradient_squared_accumulator_value', (1e-6, 1.)),
             HyperParameter.float_param('l1_regularization_strength', (0., 1.)),
             HyperParameter.float_param('l2_regularization_strength', (0., 1.)),
             HyperParameter.categorical_param('use_locking', (True, False))
@@ -84,7 +84,7 @@ class AdagradDAOptimizer(OptimizerGenerator):
 class MomentumOptimizer(OptimizerGenerator):
     def __init__(self):
         hp_space = [
-            HyperParameter.float_param('learning_rate', (1e-15, 1.)),
+            HyperParameter.float_param('learning_rate', (1e-6, 0.15)),
             HyperParameter.float_param('momentum', (0., 1.)),
             HyperParameter.categorical_param('use_locking', (True, False)),
             HyperParameter.categorical_param('use_nesterov', (True, False))
@@ -97,10 +97,10 @@ class MomentumOptimizer(OptimizerGenerator):
 class AdamOptimizer(OptimizerGenerator):
     def __init__(self):
         hp_space = [
-            HyperParameter.float_param('learning_rate', (1e-15, 1.)),
-            HyperParameter.float_param('beta1', (0., 1.-1e-15)),
-            HyperParameter.float_param('beta1', (0., 1.-1e-15)),
-            HyperParameter.float_param('epsilon', (1e-15, 0.1)),
+            HyperParameter.float_param('learning_rate', (1e-6, 0.15)),
+            HyperParameter.float_param('beta1', (0., 1.-1e时-6)),
+            HyperParameter.float_param('beta2', (0., 1.-1e-6)),
+            HyperParameter.float_param('epsilon', (1e-6, 0.1)),
             HyperParameter.categorical_param('use_locking', (True, False))
         ]
 
@@ -111,8 +111,8 @@ class AdamOptimizer(OptimizerGenerator):
 class FtrlOptimizer(OptimizerGenerator):
     def __init__(self):
         hp_space = [
-            HyperParameter.float_param('learning_rate', (1e-15, 1.)),
-            HyperParameter.float_param('learning_rate_power', (-2.,-1e-15)),
+            HyperParameter.float_param('learning_rate', (1e-6, 0.15)),
+            HyperParameter.float_param('learning_rate_power', (-2.,-1e-6)),
             HyperParameter.float_param('initial_accumulator_value', (0., 2.)),
             HyperParameter.float_param('l1_regularization_strength', (0., 2.)),
             HyperParameter.float_param('l2_regularization_strength', (0., 2.)),
@@ -127,7 +127,7 @@ class FtrlOptimizer(OptimizerGenerator):
 class ProximalGradientDescentOptimizer(OptimizerGenerator):
     def __init__(self):
         hp_space = [
-            HyperParameter.float_param('learning_rate', (1e-15, 1.)),
+            HyperParameter.float_param('learning_rate', (1e-6, 0.15)),
             HyperParameter.float_param('l1_regularization_strength', (0., 2.)),
             HyperParameter.float_param('l2_regularization_strength', (0., 2.)),
             HyperParameter.categorical_param('use_locking', (True, False))
@@ -140,8 +140,8 @@ class ProximalGradientDescentOptimizer(OptimizerGenerator):
 class ProximalAdagradOptimizer(OptimizerGenerator):
     def __init__(self):
         hp_space = [
-            HyperParameter.float_param('learning_rate', (1e-15, 1.)),
-            HyperParameter.float_param('initial_accumulator_value', (1e-15, 2.)),
+            HyperParameter.float_param('learning_rate', (1e-6, 0.15)),
+            HyperParameter.float_param('initial_accumulator_value', (1e-6, 2.)),
             HyperParameter.float_param('l1_regularization_strength', (0., 2.)),
             HyperParameter.float_param('l2_regularization_strength', (0., 2.)),
             HyperParameter.categorical_param('use_locking', (True, False))
@@ -151,18 +151,20 @@ class ProximalAdagradOptimizer(OptimizerGenerator):
         super().__init__(hp_space, model_initializer)
 
 
-class RMSPropOptimizer(OptimizerGernerator):
+class RMSPropOptimizer(OptimizerGenerator):
     def __init__(self):
         hp_space = [
-            HyperParameter.float_param('learning_rate', (1e-15, 1.)),
+            HyperParameter.float_param('learning_rate', (1e-6, 0.15)),
             HyperParameter.float_param('decay', (0., 1.)),
             HyperParameter.float_param('momentum', (0., 1.)),
-            HyperParameter.float_param('epsilon', (1e-15, 0.1)),
+            HyperParameter.float_param('epsilon', (1e-6, 0.1)),
             HyperParameter.categorical_param('use_locking', (True, False)),
             HyperParameter.categorical_param('centered', (True, False)),
         ]
 
         model_initializer = tf.trainRMSPropOptimizer
         super().__init__(hp_space, model_initializer)
+
+
 
 
