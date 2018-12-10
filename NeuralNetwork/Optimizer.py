@@ -98,7 +98,7 @@ class AdamOptimizer(OptimizerGenerator):
     def __init__(self):
         hp_space = [
             HyperParameter.float_param('learning_rate', (1e-6, 0.15)),
-            HyperParameter.float_param('beta1', (0., 1.-1e时-6)),
+            HyperParameter.float_param('beta1', (0., 1.-1e-6)),
             HyperParameter.float_param('beta2', (0., 1.-1e-6)),
             HyperParameter.float_param('epsilon', (1e-6, 0.1)),
             HyperParameter.categorical_param('use_locking', (True, False))
