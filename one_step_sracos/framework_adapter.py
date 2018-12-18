@@ -25,7 +25,7 @@ def adapt_framework_model(model, train_x, train_y):
     optimizer.run_initialization(obj_fct=evaluator.evaluate, ss=sample_size, pn=positive_num, rp=random_probability,
                                  ub=uncertain_bit)
 
-    return Optimization(optimizer, evaluator.evaluate, model.__name__)
+    return Optimization(optimizer, evaluator.evaluate, type(model).__name__)
 
 
 def evaluator_adapter(evaluator):
