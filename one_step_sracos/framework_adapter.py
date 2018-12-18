@@ -1,7 +1,6 @@
-from framework.base import HyperParameter
+from framework.base import ModelEvaluator
 from one_step_sracos.Components import Dimension
 from one_step_sracos.Racos import RacosOptimization
-from framework.base import ModelEvaluator
 from one_step_sracos.bandit_model_selection import Optimization
 
 
@@ -26,7 +25,7 @@ def adapt_framework_model(model, train_x, train_y):
     optimizer.run_initialization(obj_fct=evaluator.evaluate, ss=sample_size, pn=positive_num, rp=random_probability,
                                  ub=uncertain_bit)
 
-    return Optimization(optimizer, evaluator.evaluate)
+    return Optimization(optimizer, evaluator.evaluate, model.__name__)
 
 
 def evaluator_adapter(evaluator):

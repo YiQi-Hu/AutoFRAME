@@ -39,7 +39,7 @@ class DecisionTree(SKLearnModelGenerator):
             HyperParameter.int_param('min_samples_leaf', (1, 100)),
             HyperParameter.categorical_param('max_features', ('sqrt', 'log2', None)),
             HyperParameter.int_param('max_leaf_nodes', (2, 100)),
-            HyperParameter.float_param('min_impurity_decrease', (0., 100.))
+            HyperParameter.float_param('min_impurity_decrease', (0., 100.)),
         ]
 
         model_initializer = sklearn.tree.DecisionTreeClassifier

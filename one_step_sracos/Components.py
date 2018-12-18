@@ -39,6 +39,9 @@ class Instance:
         self.__fitness = 0
         self.__dimension = dim
 
+    def __str__(self):
+        return 'Instance: feature ({}), fitness ({})'.format(self.__feature, self.__fitness)
+
     # return feature value in index-th dimension
     def get_feature(self, index):
         return self.__feature[index]
