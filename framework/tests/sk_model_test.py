@@ -5,9 +5,16 @@ import random
 import signal
 import time
 
+import matplotlib.pyplot as plt
+import pandas as pd
+
 import framework.base as base
 import framework.sk_models as sk
 from utils.loader import dataset_reader
+
+
+# --------------------------------------------------------
+# draw histogram
 
 
 # --------------------------------------------------------
@@ -45,7 +52,11 @@ signal.signal(signal.SIGALRM, timeout_handler)
 
 def random_search(model_generator, train_x, train_y, search_times=100):
     evaluator = base.ModelEvaluator(model_generator, train_x, train_y)
-    name = type(model_generator).__name__
+    model_name = type(model_generator).__name__
+    raw_parameter_list = []
+    actual_parameter_list = []
+    accuracy_list = []
+    time_list = []
 
     for i in range(search_times):
         # sample a set of parameters and evaluate
@@ -60,11 +71,21 @@ def random_search(model_generator, train_x, train_y, search_times=100):
             signal.alarm(0)
             elapsed = time.time() - start
 
-            log.info(pattern.format(name, actual_params, float(accuracy), elapsed))
+            log.info(pattern.format(model_name, actual_params, float(accuracy), elapsed))
+
+            # add parameters and accuracy information to four lists
+            raw_parameter_list.append(raw_parameter_list)
+            accuracy_list.append(accuracy)
+            actual_parameter_list.append(actual_params)
+            time_list.append(elapsed)
         except Exception as e:
-            log.error('[{}]: parameters: {}, error message: {}'.format(name, actual_params, e))
+            log.error('[{}]: parameters: {}, error message: {}'.format(model_name, actual_params, e))
         except RuntimeWarning as w:
-            log.warning('[{}]: parameters: {}, warning message: {}'.format(name, actual_params, w))
+            log.warning('[{}]: parameters: {}, warning message: {}'.format(model_name, actual_params, w))
+
+    # convert four lists to DataFrame
+    result_data = list(zip(raw_parameter_list, actual_parameter_list, accuracy_list, time_list))
+    return pd.DataFrame(data=result_data, columns=['Raw Parameters', 'Actual Parameters', 'Accuracy', 'Time'])
 
 
 def random_sample_parameters(hp_space):
@@ -98,11 +119,29 @@ if __name__ == '__main__':
     my_path = os.path.abspath(os.path.dirname(__file__))
     data_file = os.path.join(my_path, '../../temp_dataset/adult/adult_train_data.pkl')
     x, y = dataset_reader(data_file)
-    # model = sk.Bagging()
+    # model = sk.GaussianNB()
     # random_search(model, x, y, search_times=5)
 
     model_list = [m for m in inspect.getmembers(sk, inspect.isclass) if m[1].__module__ == sk.__name__]
+    filtered_models = filter(lambda p: p[0] != 'SKLearnModelGenerator' and 'SVC' not in p[0], model_list)
 
-    for name, classifier in filter(lambda p: p[0] != 'SKLearnModelGenerator', model_list):
+    # initialize image folder
+    if not os.path.exists('image'):
+        os.mkdir('image')
+    if not os.path.exists('result_pickle'):
+        os.mkdir('result_pickle')
+
+    for name, classifier in filtered_models:
         model = classifier()
-        random_search(model, x, y, search_times=10)
+        data = random_search(model, x, y, search_times=100)
+
+        # if this type classifiers are all down, continue so that
+        # data['Accuracy'] will not raise an error
+        if data['Accuracy'].empty:
+            continue
+
+        # save image and pickle file
+        plt.figure()
+        data['Accuracy'].plot.hist(bins=20)
+        data.to_pickle('result_pickle/{}.pkl'.format(name))
+        plt.savefig('image/{}.svg'.format(name), bbox_inches='tight')

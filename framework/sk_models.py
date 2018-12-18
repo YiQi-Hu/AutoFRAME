@@ -35,7 +35,7 @@ class DecisionTree(SKLearnModelGenerator):
         hp_space = [
             HyperParameter.categorical_param('criterion', ('gini', 'entropy')),
             HyperParameter.int_param('max_depth', (1, 40)),
-            HyperParameter.int_param('min_samples_split', (1, 100)),
+            # HyperParameter.int_param('min_samples_split', (2, 100)),
             HyperParameter.int_param('min_samples_leaf', (1, 100)),
             HyperParameter.categorical_param('max_features', ('sqrt', 'log2', None)),
             HyperParameter.int_param('max_leaf_nodes', (2, 100)),
@@ -52,7 +52,7 @@ class ExtraTree(SKLearnModelGenerator):
         hp_space = [
             HyperParameter.categorical_param('criterion', ('gini', 'entropy')),
             HyperParameter.int_param('max_depth', (1, 40)),
-            HyperParameter.int_param('min_samples_split', (1, 100)),
+            # HyperParameter.int_param('min_samples_split', (2, 100)),
             HyperParameter.int_param('min_samples_leaf', (1, 100)),
             HyperParameter.categorical_param('max_features', ('sqrt', 'log2', None)),
             HyperParameter.int_param('max_leaf_nodes', (2, 100)),
@@ -282,7 +282,7 @@ class Bagging(SKLearnModelGenerator):
         hp_space = [
             HyperParameter.int_param('n_estimators', (5, 100)),
             HyperParameter.float_param('max_samples', (0.0, 1.0)),
-            HyperParameter.float_param('max_features', (0.0, 1.0))
+            # HyperParameter.float_param('max_features', (0.0, 1.0))
         ]
 
         initializer = sklearn.ensemble.BaggingClassifier
