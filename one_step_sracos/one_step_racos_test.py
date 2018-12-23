@@ -1,6 +1,7 @@
 import logging
 
 import framework.sk_models as sk
+import time
 from one_step_sracos.bandit_model_selection import bandit_selection
 from one_step_sracos.framework_adapter import adapt_framework_model
 from utils.loader import adult_dataset
@@ -28,13 +29,24 @@ def test():
     train_x, train_y = adult_dataset()
 
     # define models and initialize optimization
+    start = time.time()
     logger.debug('initialize models')
-    models = [sk.DecisionTree(), sk.AdaBoost(), sk.QuadraticDiscriminantAnalysis(), sk.Perceptron(), sk.L2PenaltyLogisticRegression(),
+
+    # decision tree, ada boost, quadratic discriminant, perceptron, logistic regression,
+    models = [sk.DecisionTree(),
+              sk.AdaBoost(),
+              sk.QuadraticDiscriminantAnalysis(),
+              sk.Perceptron(),
+              sk.L2PenaltyLogisticRegression(),
               sk.GaussianNB()]
+
     optimizations = [adapt_framework_model(o, train_x, train_y) for o in models]
 
     logger.debug('do bandit selection')
     bandit_selection(optimizations, 100)
+
+    duration = time.time() - start
+    logger.info('Total time is {}'.format(duration))
 
 
 if __name__ == '__main__':
