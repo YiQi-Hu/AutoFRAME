@@ -43,9 +43,10 @@ class Optimization:
 
 
 def _ucb_value(optimization, sample_time):
-    ei = _expectation_improvement(optimization.best_instance.get_fitness(), optimization.gaussian_mu,
-                                  optimization.gaussian_sigma)
-    return ei + np.sqrt(2 * np.log(sample_time) / optimization.count)
+    # ei = _expectation_improvement(optimization.best_instance.get_fitness(), optimization.gaussian_mu,
+    #                               optimization.gaussian_sigma)
+
+    return optimization.gaussian_mu + np.sqrt(2 * np.log(sample_time) / optimization.count)
 
 
 def _expectation_improvement(best_so_far_value, mu, sigma):

@@ -29,7 +29,7 @@ def test():
 
     # define models and initialize optimization
     logger.debug('initialize models')
-    models = [sk.AdaBoost(), sk.QuadraticDiscriminantAnalysis(), sk.Perceptron(), sk.L2PenaltyLogisticRegression(),
+    models = [sk.DecisionTree(), sk.AdaBoost(), sk.QuadraticDiscriminantAnalysis(), sk.Perceptron(), sk.L2PenaltyLogisticRegression(),
               sk.GaussianNB()]
     optimizations = [adapt_framework_model(o, train_x, train_y) for o in models]
 
