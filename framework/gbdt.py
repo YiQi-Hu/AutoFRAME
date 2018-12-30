@@ -35,7 +35,7 @@ class LightGBM(GBDTModelGenerator):
             HyperParameter.categorical_param('boosting_type', ('gbdt', 'dart', 'goss', 'rf')),
             HyperParameter.int_param('num_leaves', (10, 300)),
             HyperParameter.int_param('max_depth', (-1, 100)),
-            HyperParameter.float_param('learning_rate', (0.01, 1)),
+            HyperParameter.float_param('learning_rate', (0.01, 0.2)),
             HyperParameter.int_param('n_estimators', (10, 1000)),
             HyperParameter.int_param('subsample_for_bin', (20000, 2000000)),
             HyperParameter.float_param('min_split_gain', (0., 10.)),

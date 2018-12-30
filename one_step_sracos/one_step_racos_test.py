@@ -1,8 +1,9 @@
 import logging
 
 import framework.sk_models as sk
+import matplotlib.pyplot as plt
 import time
-from one_step_sracos.bandit_model_selection import bandit_selection
+from one_step_sracos.bandit_model_selection import BanditSelection
 from one_step_sracos.framework_adapter import adapt_framework_model
 from utils.loader import adult_dataset
 
@@ -36,17 +37,28 @@ def test():
     models = [sk.DecisionTree(),
               sk.AdaBoost(),
               sk.QuadraticDiscriminantAnalysis(),
-              sk.Perceptron(),
-              sk.L2PenaltyLogisticRegression(),
-              sk.GaussianNB()]
+              sk.GaussianNB(),
+              sk.SVC(),
+              sk.LinearSVC()]
 
     optimizations = [adapt_framework_model(o, train_x, train_y) for o in models]
 
     logger.debug('do bandit selection')
-    bandit_selection(optimizations, 100)
+
+    bandit_selection = BanditSelection(optimizations)
+    bandit_selection.fit(100)
 
     duration = time.time() - start
     logger.info('Total time is {}'.format(duration))
+
+    # draw converge curve
+    logger.info('Converge curve is {}'.format(bandit_selection.converge_curve))
+
+    plt.figure()
+    fig, ax = plt.subplots()
+    ax.plot(range(1, len(bandit_selection.converge_curve) + 1), bandit_selection.converge_curve)
+    plt.savefig('bandit_converge_curve.svg')
+    # bandit_selection(optimizations, 100)
 
 
 if __name__ == '__main__':

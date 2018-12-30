@@ -12,6 +12,7 @@ import abc
 FLOAT = 0
 INTEGER = 1
 CATEGORICAL = 2
+_PENALTY = -1
 
 
 def data_collector(index_list, features, labels):
@@ -69,7 +70,10 @@ class ModelEvaluator:
             x, y = data_collector(train_index, self.train_x, self.train_y)
             valid_x, valid_y = data_collector(valid_index, self.train_x, self.train_y)
 
-            this_model = this_model.fit(x, y)
+            try:
+                this_model = this_model.fit(x, y)
+            except ValueError:  # temporally just catch ValueError
+                return -1
 
             predictions = this_model.predict(valid_x)
 

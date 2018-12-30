@@ -147,9 +147,10 @@ class LogisticRegression(SKLearnModelGenerator):
     def __init__(self):
         hp_space = [
             HyperParameter.categorical_param('penalty', ('l1', 'l2')),
+            HyperParameter.categorical_param('dual', (True, False)),
             HyperParameter.float_param('tol', (1e-6, 1e-1)),
             HyperParameter.float_param('C', (1e-2, 1e2)),
-            HyperParameter.categorical_param('solver', ('saga', 'liblinear')),
+            HyperParameter.categorical_param('solver', ('saga', 'liblinear', 'sag', 'lbfgs', 'newton-cg')),
             HyperParameter.int_param('max_iter', (100, 1000)),
             HyperParameter.categorical_param('multi_class', ('ovr', 'multinomial'))
         ]
@@ -158,36 +159,36 @@ class LogisticRegression(SKLearnModelGenerator):
         super().__init__(hp_space, initializer)
 
 
-class DualLibLinearLogisticRegression(SKLearnModelGenerator):
-
-    def __init__(self):
-        hp_space = [
-            HyperParameter.categorical_param('penalty', ('l2',)),
-            HyperParameter.categorical_param('dual', (True,)),
-            HyperParameter.float_param('tol', (1e-6, 1e-1)),
-            HyperParameter.float_param('C', (1e-2, 1e2)),
-            HyperParameter.categorical_param('solver', ('liblinear',)),
-            HyperParameter.int_param('max_iter', (100, 1000)),
-            HyperParameter.categorical_param('multi_class', ('ovr', 'multinomial'))
-        ]
-
-        initializer = sklearn.linear_model.LogisticRegression
-        super().__init__(hp_space, initializer)
-
-
-class L2PenaltyLogisticRegression(SKLearnModelGenerator):
-
-    def __init__(self):
-        hp_space = [
-            HyperParameter.float_param('tol', (1e-6, 1e-1)),
-            HyperParameter.float_param('C', (1e-2, 1e2)),
-            HyperParameter.categorical_param('solver', ('newton-cg', 'lbfgs', 'sag')),
-            HyperParameter.int_param('max_iter', (100, 1000)),
-            HyperParameter.categorical_param('multi_class', ('ovr', 'multinomial'))
-        ]
-
-        initializer = sklearn.linear_model.LogisticRegression
-        super().__init__(hp_space, initializer)
+# class DualLibLinearLogisticRegression(SKLearnModelGenerator):
+#
+#     def __init__(self):
+#         hp_space = [
+#             HyperParameter.categorical_param('penalty', ('l2',)),
+#             HyperParameter.categorical_param('dual', (True,)),
+#             HyperParameter.float_param('tol', (1e-6, 1e-1)),
+#             HyperParameter.float_param('C', (1e-2, 1e2)),
+#             HyperParameter.categorical_param('solver', ('liblinear',)),
+#             HyperParameter.int_param('max_iter', (100, 1000)),
+#             HyperParameter.categorical_param('multi_class', ('ovr', 'multinomial'))
+#         ]
+#
+#         initializer = sklearn.linear_model.LogisticRegression
+#         super().__init__(hp_space, initializer)
+#
+#
+# class L2PenaltyLogisticRegression(SKLearnModelGenerator):
+#
+#     def __init__(self):
+#         hp_space = [
+#             HyperParameter.float_param('tol', (1e-6, 1e-1)),
+#             HyperParameter.float_param('C', (1e-2, 1e2)),
+#             HyperParameter.categorical_param('solver', ('newton-cg', 'lbfgs', 'sag')),
+#             HyperParameter.int_param('max_iter', (100, 1000)),
+#             HyperParameter.categorical_param('multi_class', ('ovr', 'multinomial'))
+#         ]
+#
+#         initializer = sklearn.linear_model.LogisticRegression
+#         super().__init__(hp_space, initializer)
 
 
 class SGD(SKLearnModelGenerator):
