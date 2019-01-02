@@ -123,7 +123,8 @@ if __name__ == '__main__':
     # random_search(model, x, y, search_times=5)
 
     model_list = [m for m in inspect.getmembers(sk, inspect.isclass) if m[1].__module__ == sk.__name__]
-    filtered_models = filter(lambda p: p[0] != 'SKLearnModelGenerator' and 'SVC' not in p[0], model_list)
+    # filtered_models = filter(lambda p: p[0] != 'SKLearnModelGenerator' and 'NuSVC' not in p[0], model_list)
+    filtered_models = [('SVC', sk.SVC)]
 
     # initialize image folder
     if not os.path.exists('image'):

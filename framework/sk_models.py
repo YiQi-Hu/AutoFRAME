@@ -72,7 +72,7 @@ class SVC(SKLearnModelGenerator):
             HyperParameter.int_param('degree', (1, 30)),
             HyperParameter.float_param('gamma', (1e-5, 10)),
             HyperParameter.float_param('coef0', (0., 100.)),
-            HyperParameter.categorical_param('shrinking', (True, False)),
+            # HyperParameter.categorical_param('shrinking', (True, False)),
             HyperParameter.float_param('tol', (1e-5, 1e-1))
         ]
 
@@ -352,7 +352,7 @@ class BernoulliNB(SKLearnModelGenerator):
 
     def __init__(self):
         hp_space = [
-            HyperParameter.float_param('alpha', (0.0, 10.0)),
+            HyperParameter.float_param('alpha', (1e-2, 100.0)),
             HyperParameter.float_param('binarize', (0.0, 1.0))
         ]
 
@@ -364,7 +364,7 @@ class MultinomialNB(SKLearnModelGenerator):
 
     def __init__(self):
         hp_space = [
-            HyperParameter.float_param('alpha', (0.0, 10.0))
+            HyperParameter.float_param('alpha', (1e-2, 100.0))
         ]
 
         initializer = sklearn.naive_bayes.MultinomialNB

@@ -38,10 +38,18 @@ def test():
               sk.AdaBoost(),
               sk.QuadraticDiscriminantAnalysis(),
               sk.GaussianNB(),
-              sk.SVC(),
-              sk.LinearSVC()]
+              # sk.SVC(),
+              sk.LinearSVC(),
+              sk.KNeighbors(),
+              sk.BernoulliNB(),
+              sk.ExtraTree(),
+              sk.MultinomialNB(),
+              sk.PassiveAggressive(),
+              sk.RandomForest(),
+              sk.SGD()]
 
     optimizations = [adapt_framework_model(o, train_x, train_y) for o in models]
+    logger.info('Racos run_initialization spend: {}s'.format(time.time() - start))
 
     logger.debug('do bandit selection')
 
@@ -53,6 +61,8 @@ def test():
 
     # draw converge curve
     logger.info('Converge curve is {}'.format(bandit_selection.converge_curve))
+    for o in optimizations:
+        logger.info('{} information: {}'.format(o.name, o.show_model()))
 
     plt.figure()
     fig, ax = plt.subplots()

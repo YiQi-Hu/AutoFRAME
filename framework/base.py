@@ -73,6 +73,7 @@ class ModelEvaluator:
             try:
                 this_model = this_model.fit(x, y)
             except ValueError:  # temporally just catch ValueError
+                print("Parameter wrong, return -1")
                 return -1
 
             predictions = this_model.predict(valid_x)

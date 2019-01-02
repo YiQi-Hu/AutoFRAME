@@ -24,6 +24,7 @@ class Optimization:
         ins = self.optimizer.run_one_step(obj_fct=self.obj_func)
         self.instances.append(ins)
         self.count += 1
+        self.fit_gaussian()
 
         logger.debug('{} - {}, times : {}'.format(self.name, str(ins), self.count))
         return ins
