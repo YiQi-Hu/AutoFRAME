@@ -31,13 +31,13 @@ def adapt_framework_model(model, train_x, train_y):
     logger.debug('Racos begin to initialize, model is {}'.format(model_name))
     start = time.time()
 
-    optimizer.run_initialization(obj_fct=evaluator.evaluate, ss=sample_size, pn=positive_num, rp=random_probability,
-                                 ub=uncertain_bit)
+    initial_instances = optimizer.run_initialization(obj_fct=evaluator.evaluate, ss=sample_size, pn=positive_num,
+                                                     rp=random_probability, ub=uncertain_bit)
 
     elapsed = time.time() - start
     logger.debug('Racos complete initialization for model {}, spend {}s'.format(model_name, elapsed))
 
-    return Optimization(optimizer, evaluator.evaluate, model_name)
+    return Optimization(optimizer, evaluator.evaluate, model_name, initial_instances)
 
 
 def evaluator_adapter(evaluator):

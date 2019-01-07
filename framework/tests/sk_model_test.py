@@ -10,7 +10,7 @@ import pandas as pd
 
 import framework.base as base
 import framework.sk_models as sk
-from utils.loader import dataset_reader
+from utils.loader import car_dataset
 
 
 # --------------------------------------------------------
@@ -116,9 +116,7 @@ def random_sample_parameters(hp_space):
 
 if __name__ == '__main__':
 
-    my_path = os.path.abspath(os.path.dirname(__file__))
-    data_file = os.path.join(my_path, '../../temp_dataset/adult/adult_train_data.pkl')
-    x, y = dataset_reader(data_file)
+    x, y = car_dataset()
     # model = sk.GaussianNB()
     # random_search(model, x, y, search_times=5)
 

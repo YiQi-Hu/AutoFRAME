@@ -19,3 +19,9 @@ def adult_dataset():
     curr_path = os.path.abspath(os.path.dirname(__file__))
     adult_dataset_path = os.path.join(curr_path, "../temp_dataset/adult/adult_train_data.pkl")
     return dataset_reader(adult_dataset_path)
+
+
+def car_dataset():
+    curr_path = os.path.abspath(os.path.dirname(__file__))
+    adult_dataset_path = os.path.join(curr_path, "../temp_dataset/car/car_train_data.pkl")
+    return dataset_reader(adult_dataset_path)

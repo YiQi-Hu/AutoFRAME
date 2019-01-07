@@ -1,24 +1,24 @@
 import logging
+import time
 
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.integrate import quad
 from scipy.stats import norm
-import time
 
 logger = logging.getLogger('bandit.process')
 
 
 class Optimization:
 
-    def __init__(self, optimizer, obj_func, name=None):
+    def __init__(self, optimizer, obj_func, name=None, instances=None):
         self.optimizer = optimizer
         self.obj_func = obj_func
-        self.instances = []
+        self.instances = instances if instances is not None else []
         self.count = 0
         self.gaussian_mu = 0
         self.gaussian_sigma = 0
         self.name = name
+
+        self.fit_gaussian()
 
     def run_one_step(self):
         ins = self.optimizer.run_one_step(obj_fct=self.obj_func)
@@ -56,22 +56,7 @@ class BanditSelection:
         self.optimizations = optimizations
         self.converge_curve = []
 
-    def fit(self, sample_budget, initial_steps=20):
-        logger.info("initialization")
-        start = time.time()
-
-        # initialize each process, use dictionary to record each optimizer's result
-        for optimization in self.optimizations:
-            # do initialization
-            logger.debug("initialize {}".format(optimization.name))
-            for i in range(initial_steps):
-                optimization.run_one_step()
-
-            optimization.fit_gaussian()
-
-        elapsed = time.time() - start
-        logger.info("initialization done, spend {}s".format(elapsed))
-
+    def fit(self, sample_budget):
         # update distribution
         logger.info("begin bandit selection")
         start = time.time()
@@ -103,7 +88,3 @@ class BanditSelection:
 
 def _ucb_value(optimization, sample_time):
     return optimization.gaussian_mu + np.sqrt(2 * np.log(sample_time) / optimization.count)
-
-
-def _expectation_improvement(best_so_far_value, mu, sigma):
-    return quad(lambda x: x * norm.pdf(x, loc=mu, scale=sigma), best_so_far_value, np.inf)[0]

@@ -223,7 +223,7 @@ class RacosOptimization:
         # initialize optimal
         self.__optimal = self.__pos_pop[0].copy_instance()
 
-        return
+        return temp
 
     # distinguish function for mixed optimization
     def distinguish(self, exa, neg_set):
@@ -391,9 +391,8 @@ class RacosOptimization:
         self.log_clear()
         self.set_parameters(ss=ss, bud=0, pn=pn, rp=rp, ub=ub)
         self.reset_model()
-        self.initialize(obj_fct)
 
-        return
+        return self.initialize(obj_fct)
 
     def run_one_step(self, obj_fct=None):
 
