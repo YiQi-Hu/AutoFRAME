@@ -57,7 +57,8 @@ class RandomOptimization:
 
 
 def _new_func(optimization, t):
-    return _ucb_func(optimization, t) + np.sqrt(optimization.square_mean + ucb_item)
+    ucb_item = np.sqrt(2 * np.log(t - 1) / optimization.count)
+    return optimization.mu + ucb_item + np.sqrt(optimization.square_mean + ucb_item)
 
 
 def _ucb_func(optimization, t):
