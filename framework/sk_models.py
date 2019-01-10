@@ -67,11 +67,11 @@ class SVC(SKLearnModelGenerator):
 
     def __init__(self):
         hp_space = [
-            HyperParameter.float_param('C', (0.01, 1e6)),
-            HyperParameter.categorical_param('kernel', ('linear', 'poly', 'rbf', 'sigmoid')),
-            HyperParameter.int_param('degree', (1, 30)),
-            HyperParameter.float_param('gamma', (1e-5, 10)),
-            HyperParameter.float_param('coef0', (0., 100.)),
+            HyperParameter.float_param('C', (0.03125, 32768)),
+            HyperParameter.categorical_param('kernel', ('poly', 'rbf', 'sigmoid')),
+            HyperParameter.int_param('degree', (2, 5)),
+            HyperParameter.float_param('gamma', (3.0517578125e-05, 8)),
+            HyperParameter.float_param('coef0', (-1, 1.)),
             # HyperParameter.categorical_param('shrinking', (True, False)),
             HyperParameter.float_param('tol', (1e-5, 1e-1))
         ]
@@ -85,11 +85,11 @@ class NuSVC(SKLearnModelGenerator):
     def __init__(self):
         hp_space = [
             HyperParameter.float_param('nu', (5e-3, 1)),
-            HyperParameter.categorical_param('kernel', ('linear', 'poly', 'rbf', 'sigmoid')),
-            HyperParameter.int_param('degree', (1, 30)),
-            HyperParameter.float_param('gamma', (1e-5, 10)),
-            HyperParameter.float_param('coef0', (0., 100.)),
-            HyperParameter.categorical_param('shrinking', (True, False)),
+            HyperParameter.categorical_param('kernel', ('poly', 'rbf', 'sigmoid')),
+            HyperParameter.int_param('degree', (2, 5)),
+            HyperParameter.float_param('gamma', (3.0517578125e-05, 8)),
+            HyperParameter.float_param('coef0', (-1, 1.)),
+            # HyperParameter.categorical_param('shrinking', (True, False)),
             HyperParameter.float_param('tol', (1e-5, 1e-1))
         ]
 
@@ -105,7 +105,7 @@ class LinearSVC(SKLearnModelGenerator):
             HyperParameter.categorical_param('loss', ('hinge', 'squared_hinge')),
             HyperParameter.categorical_param('dual', (True, False)),
             HyperParameter.float_param('tol', (1e-6, 1e-1)),
-            HyperParameter.float_param('C', (0.01, 1e6))
+            HyperParameter.float_param('C', (0.03125, 327686))
         ]
 
         initializer = sklearn.svm.LinearSVC

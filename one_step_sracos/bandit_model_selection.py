@@ -18,16 +18,7 @@ class Optimization:
         self.gaussian_sigma = 0
         self.name = name
 
-        self.fit_gaussian()
-
-    def run_one_step(self):
-        ins = self.optimizer.run_one_step(obj_fct=self.obj_func)
-        self.instances.append(ins)
-        self.count += 1
-        self.fit_gaussian()
-
-        logger.debug('{} - {}, times : {}'.format(self.name, str(ins), self.count))
-        return ins
+        self._init()
 
     @property
     def best_so_far(self, size=3):
@@ -41,6 +32,15 @@ class Optimization:
 
         return self.best_so_far[0]
 
+    def run_one_step(self):
+        ins = self.optimizer.run_one_step(obj_fct=self.obj_func)
+        self.instances.append(ins)
+        self.count += 1
+        self.fit_gaussian()
+
+        logger.debug('{} - {}, times : {}'.format(self.name, str(ins), self.count))
+        return ins
+
     def fit_gaussian(self):
         self.gaussian_mu, self.gaussian_sigma = norm.fit(list(map(lambda x: x.get_fitness(), self.best_so_far)))
         logger.debug("mu is {}, sigma is {}".format(self.gaussian_mu, self.gaussian_sigma))
@@ -48,6 +48,10 @@ class Optimization:
     def show_model(self):
         return 'model: {}\nbest instance: {}\ngaussian_mu: {}\ngaussian_sigma: {}\nbudget: {}' \
             .format(self.name, str(self.best_instance), self.gaussian_mu, self.gaussian_sigma, self.count)
+
+    def _init(self):
+        if len(self.instances) > 0:
+            self.fit_gaussian()
 
 
 class BanditSelection:
