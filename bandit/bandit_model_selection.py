@@ -51,6 +51,17 @@ class RandomOptimization:
         eval_value = evaluation_result[EVALUATION_CRITERIA].values[0]
         self._update_parameter(previous_count, eval_value)
 
+    def clear(self):
+        self.count = 0
+        self.time_out_count = 0
+
+        self.instances = pd.DataFrame()
+
+        self.mu = 0
+        self.sigma = 0
+
+        self.square_mean = 0
+
     def _update_parameter(self, previous_count, new_eval_result):
         self.mu = (previous_count * self.mu + new_eval_result) / (previous_count + 1)
         self.sigma = self.instances[EVALUATION_CRITERIA].var()
@@ -98,6 +109,7 @@ class BanditModelSelection:
 
     def _init_each_optimizations(self, train_x, train_y):
         for optimization in self.optimizations:
+            optimization.clear()
             optimization.run_one_step(train_x, train_y)
 
     def _next_selection(self, current_count):
