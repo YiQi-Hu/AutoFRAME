@@ -88,6 +88,8 @@ class BanditModelSelection:
             models_info += str(optimization)
             models_info += '\n\n'
 
+        return models_info
+
     def _best_selection(self):
         best_results = [r.best_evaluation[EVALUATION_CRITERIA] for r in self.optimizations]
         best_index = np.argmax(best_results)

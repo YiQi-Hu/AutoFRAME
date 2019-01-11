@@ -79,6 +79,7 @@ def _do_model_selection(data, strategy):
         logger.info('Bandit selection done, spend {}s\n\n'.format(elapsed_time))
 
         logger.info('Selection result: \n{}\n\n'.format(result))
+        logger.info('All models information:\n{}\n\n'.format(strategy.show_models()))
 
 
 if __name__ == '__main__':
