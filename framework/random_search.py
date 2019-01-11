@@ -69,7 +69,7 @@ def random_search(model_generator, train_x, train_y, search_times=100):
             log.info('accuracy: {}, spend {}s'.format(float(accuracy), elapsed))
 
             # add parameters and accuracy information to four lists
-            raw_parameter_list.append(raw_parameter_list)
+            raw_parameter_list.append(raw_params)
             accuracy_list.append(accuracy)
             actual_parameter_list.append(actual_params)
             time_list.append(elapsed)

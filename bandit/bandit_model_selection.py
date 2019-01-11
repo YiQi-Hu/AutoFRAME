@@ -25,7 +25,7 @@ class RandomOptimization:
         self.square_mean = 0
 
     def __str__(self):
-        return 'Model {}\nBudget: {}\nTimeout count: {}\nBest result: {}\n' \
+        return 'Model {}\nBudget: {}\nTimeout count: {}\n======Best result======:\n {}\n============\n' \
                'Gaussian mu: {}\nGaussian sigma: {}\nmu_Y: {}'.format(self.name, self.count, self.time_out_count,
                                                                       self.best_evaluation, self.mu, self.sigma,
                                                                       self.square_mean)
@@ -48,7 +48,8 @@ class RandomOptimization:
         previous_count = self.count
         self.count += 1
 
-        self._update_parameter(previous_count, evaluation_result[EVALUATION_CRITERIA])
+        eval_value = evaluation_result[EVALUATION_CRITERIA].values[0]
+        self._update_parameter(previous_count, eval_value)
 
     def _update_parameter(self, previous_count, new_eval_result):
         self.mu = (previous_count * self.mu + new_eval_result) / (previous_count + 1)
@@ -58,7 +59,7 @@ class RandomOptimization:
 
 def _new_func(optimization, t):
     ucb_item = np.sqrt(2 * np.log(t - 1) / optimization.count)
-    return optimization.mu + ucb_item + np.sqrt(optimization.square_mean + ucb_item)
+    return optimization.mu + np.sqrt(optimization.square_mean) + ucb_item + np.sqrt(ucb_item)
 
 
 def _ucb_func(optimization, t):
