@@ -6,6 +6,7 @@ import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedKFold
+import logging
 
 import abc
 
@@ -72,8 +73,9 @@ class ModelEvaluator:
 
             try:
                 this_model = this_model.fit(x, y)
-            except ValueError:  # temporally just catch ValueError
-                print("Parameter wrong, return -1")
+            except ValueError as e:  # temporally just catch ValueError
+                logger = logging.getLogger('bandit.evaluator')
+                logger.log("Parameter wrong, return -1, error message: {}".format(e))
                 return -1
 
             predictions = this_model.predict(valid_x)
