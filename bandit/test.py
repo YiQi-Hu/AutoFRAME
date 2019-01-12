@@ -72,7 +72,7 @@ def _do_model_selection(data, strategy, strategy_name):
         logger.info('Begin bandit selection on dataset {}'.format(data_name))
         start = time.time()
 
-        result = strategy.fit(train_x, train_y, 20)
+        result = strategy.fit(train_x, train_y, 1000)
         assert isinstance(result, RandomOptimization)
 
         elapsed_time = time.time() - start

@@ -69,7 +69,7 @@ class RandomOptimization:
 
     def _update_parameter(self, previous_count, new_eval_result):
         self.mu = (previous_count * self.mu + new_eval_result) / (previous_count + 1)
-        self.sigma = self.instances[EVALUATION_CRITERIA].var()
+        self.sigma = self.instances[EVALUATION_CRITERIA].std()
         self.square_mean = (previous_count * self.square_mean + new_eval_result ** 2) / (previous_count + 1)
 
 
