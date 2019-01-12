@@ -55,24 +55,24 @@ def bandit_test():
     # test with the new function
     logger.info('==================New Method=====================')
     bandit_selection = BanditModelSelection(optimizations, update_func='new')
-    _do_model_selection(data_sets, bandit_selection)
+    _do_model_selection(data_sets, bandit_selection, 'new')
     logger.info('==================New Method Done=====================')
 
     # test with traditional ucb function
     logger.info('==================Traditional UCB=====================')
     ucb_bandit_selection = BanditModelSelection(optimizations, update_func='ucb')
-    _do_model_selection(data_sets, ucb_bandit_selection)
+    _do_model_selection(data_sets, ucb_bandit_selection, 'ucb')
     logger.info('==================Traditional UCB Done=====================')
 
 
-def _do_model_selection(data, strategy):
+def _do_model_selection(data, strategy, strategy_name):
     assert isinstance(strategy, BanditModelSelection)
 
     for data_name, (train_x, train_y) in data:
         logger.info('Begin bandit selection on dataset {}'.format(data_name))
         start = time.time()
 
-        result = strategy.fit(train_x, train_y)
+        result = strategy.fit(train_x, train_y, 20)
         assert isinstance(result, RandomOptimization)
 
         elapsed_time = time.time() - start
@@ -80,6 +80,16 @@ def _do_model_selection(data, strategy):
 
         logger.info('Selection result: \n{}\n\n'.format(result))
         logger.info('All models information:\n{}\n\n'.format(strategy.show_models()))
+
+        strategy.statistics().to_csv('log/models_{}_{}.csv'.format(data_name, strategy_name))
+        with open('log/selection_information_{}.csv'.format(strategy_name), 'a') as f:
+            count = 13  # used to represent selection count
+            for record in strategy.param_change_info:
+                f.write('t = {}'.format(count))
+                record.to_csv(f, mode='a')
+                f.write('\n\n')
+
+                count += 1
 
 
 if __name__ == '__main__':

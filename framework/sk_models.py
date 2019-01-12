@@ -35,11 +35,11 @@ class DecisionTree(SKLearnModelGenerator):
         hp_space = [
             HyperParameter.categorical_param('criterion', ('gini', 'entropy')),
             HyperParameter.int_param('max_depth', (1, 40)),
-            # HyperParameter.int_param('min_samples_split', (2, 100)),
-            HyperParameter.int_param('min_samples_leaf', (1, 100)),
+            HyperParameter.int_param('min_samples_split', (2, 20)),
+            HyperParameter.int_param('min_samples_leaf', (1, 20)),
             HyperParameter.categorical_param('max_features', ('sqrt', 'log2', None)),
-            HyperParameter.int_param('max_leaf_nodes', (2, 100)),
-            HyperParameter.float_param('min_impurity_decrease', (0., 100.)),
+            # HyperParameter.int_param('max_leaf_nodes', (2, 100)),
+            # HyperParameter.float_param('min_impurity_decrease', (0., 100.)),
         ]
 
         model_initializer = sklearn.tree.DecisionTreeClassifier
@@ -52,11 +52,11 @@ class ExtraTree(SKLearnModelGenerator):
         hp_space = [
             HyperParameter.categorical_param('criterion', ('gini', 'entropy')),
             HyperParameter.int_param('max_depth', (1, 40)),
-            # HyperParameter.int_param('min_samples_split', (2, 100)),
-            HyperParameter.int_param('min_samples_leaf', (1, 100)),
+            HyperParameter.int_param('min_samples_split', (2, 20)),
+            HyperParameter.int_param('min_samples_leaf', (1, 20)),
             HyperParameter.categorical_param('max_features', ('sqrt', 'log2', None)),
-            HyperParameter.int_param('max_leaf_nodes', (2, 100)),
-            HyperParameter.float_param('min_impurity_decrease', (0., 100.))
+            # HyperParameter.int_param('max_leaf_nodes', (2, 100)),
+            # HyperParameter.float_param('min_impurity_decrease', (0., 100.)),
         ]
 
         model_initializer = sklearn.tree.ExtraTreeClassifier
@@ -296,12 +296,12 @@ class ExtraTrees(SKLearnModelGenerator):
         hp_space = [
             HyperParameter.int_param('n_estimators', (5, 1000)),
             HyperParameter.categorical_param('criterion', ('gini', 'entropy')),
-            HyperParameter.int_param('max_depth', (2, 40)),
-            HyperParameter.int_param('min_samples_split', (1, 100)),
-            HyperParameter.int_param('min_samples_leaf', (1, 100)),
+            HyperParameter.int_param('max_depth', (1, 40)),
+            HyperParameter.int_param('min_samples_split', (2, 20)),
+            HyperParameter.int_param('min_samples_leaf', (1, 20)),
             HyperParameter.categorical_param('max_features', ('sqrt', 'log2', None)),
-            HyperParameter.int_param('max_leaf_nodes', (-1, 100)),
-            HyperParameter.float_param('min_impurity_decrease', (0.0, 100.0))
+            # HyperParameter.int_param('max_leaf_nodes', (-1, 100)),
+            # HyperParameter.float_param('min_impurity_decrease', (0.0, 100.0))
         ]
 
         initializer = sklearn.ensemble.ExtraTreesClassifier
@@ -313,12 +313,12 @@ class RandomForest(SKLearnModelGenerator):
     def __init__(self):
         hp_space = [
             HyperParameter.int_param('n_estimators', (10, 1000)),
-            HyperParameter.int_param('max_depth', (0, 40)),
-            HyperParameter.int_param('min_samples_split', (1, 100)),
-            HyperParameter.int_param('min_samples_leaf', (1, 100)),
-            HyperParameter.categorical_param('max_features', ('sqrt', 'log2', None)),
-            HyperParameter.int_param('max_leaf_nodes', (-1, 100)),
-            HyperParameter.float_param('min_impurity_decrease', (0.0, 100.0))
+            HyperParameter.int_param('max_depth', (1, 40)),
+            HyperParameter.int_param('min_samples_split', (2, 20)),
+            HyperParameter.int_param('min_samples_leaf', (1, 20)),
+            HyperParameter.categorical_param('max_features', ('sqrt', 'log2', None))
+            # HyperParameter.int_param('max_leaf_nodes', (-1, 100)),
+            # HyperParameter.float_param('min_impurity_decrease', (0.0, 100.0))
         ]
 
         initializer = sklearn.ensemble.RandomForestClassifier

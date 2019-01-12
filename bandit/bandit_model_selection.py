@@ -24,6 +24,9 @@ class RandomOptimization:
         # Mean of the sum of the squares of evaluation result
         self.square_mean = 0
 
+        # Parameter change record
+        self.param_change_info = []
+
     def __str__(self):
         return 'Model {}\nBudget: {}\nTimeout count: {}\n======Best result======:\n {}\n============\n' \
                'Gaussian mu: {}\nGaussian sigma: {}\nmu_Y: {}'.format(self.name, self.count, self.time_out_count,
@@ -62,19 +65,35 @@ class RandomOptimization:
 
         self.square_mean = 0
 
+        self.param_change_info = []
+
     def _update_parameter(self, previous_count, new_eval_result):
         self.mu = (previous_count * self.mu + new_eval_result) / (previous_count + 1)
         self.sigma = self.instances[EVALUATION_CRITERIA].var()
         self.square_mean = (previous_count * self.square_mean + new_eval_result ** 2) / (previous_count + 1)
 
 
-def _new_func(optimization, t):
+def _new_func(optimization, t, record=None):
     ucb_item = np.sqrt(2 * np.log(t - 1) / optimization.count)
-    return optimization.mu + np.sqrt(optimization.square_mean) + ucb_item + np.sqrt(ucb_item)
+    sqrt_mu_y = np.sqrt(optimization.square_mean)
+    result = optimization.mu + sqrt_mu_y + ucb_item + np.sqrt(ucb_item)
+
+    if record is not None:
+        assert isinstance(record, list)
+        record.append((optimization.name, optimization.mu, sqrt_mu_y, ucb_item + np.sqrt(ucb_item), result))
+
+    return result
 
 
-def _ucb_func(optimization, t):
-    return optimization.mu + np.sqrt(2 * np.log(t - 1) / optimization.count)
+def _ucb_func(optimization, t, record=None):
+    second_term = np.sqrt(2 * np.log(t - 1) / optimization.count)
+    result = optimization.mu + second_term
+
+    if record is not None:
+        assert isinstance(record, list)
+        record.append((optimization.name, optimization.mu, second_term, result))
+
+    return result
 
 
 class BanditModelSelection:
@@ -83,8 +102,10 @@ class BanditModelSelection:
     def __init__(self, optimizations, update_func='new'):
         self.optimizations = optimizations
         self.update_func = self._get_update_function(update_func)
+        self.param_change_info = []
 
     def fit(self, train_x, train_y, budget=200):
+        self._clean()  # clean history data
         self._init_each_optimizations(train_x, train_y)
 
         for t in range(len(self.optimizations) + 1, budget + 1):
@@ -101,6 +122,16 @@ class BanditModelSelection:
 
         return models_info
 
+    def statistics(self):
+        data = [(o.mu, o.sigma, o.square_mean, o.count) for o in self.optimizations]
+        return pd.DataFrame(data=data, columns=['mu', 'sigma', 'mu_Y', 'budget'])
+
+    def _wrap_selection_information(self, data):
+        if self.update_func is _new_func:
+            return pd.DataFrame(data=data, columns=['name', 'mu', 'sqrt(mu_Y)', 'sum of last two', 'sum all'])
+        elif self.update_func is _ucb_func:
+            return pd.DataFrame(data=data, columns=['name', 'mu', 'second_term', 'sum all'])
+
     def _best_selection(self):
         best_results = [r.best_evaluation[EVALUATION_CRITERIA] for r in self.optimizations]
         best_index = np.argmax(best_results)
@@ -109,12 +140,17 @@ class BanditModelSelection:
 
     def _init_each_optimizations(self, train_x, train_y):
         for optimization in self.optimizations:
-            optimization.clear()
+            optimization.clear()  # clear history data
             optimization.run_one_step(train_x, train_y)
 
     def _next_selection(self, current_count):
-        values = [self.update_func(o, current_count) for o in self.optimizations]
+        selection_record = []  # used to record values of the terms of the equation for each models
+        values = [self.update_func(o, current_count, selection_record) for o in self.optimizations]
+        self.param_change_info.append(self._wrap_selection_information(selection_record))
         return self.optimizations[np.argmax(values)]
+
+    def _clean(self):
+        self.param_change_info = []
 
     def _get_update_function(self, update_func_name):
         if update_func_name == 'new':
