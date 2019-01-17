@@ -46,9 +46,9 @@ def bandit_test():
 
     # get data sets
     data_sets = [
-        # ('adult', data_loader.adult_dataset()),
-        # ('cmc', data_loader.cmc_dataset()),
-        # ('car', data_loader.car_dataset()),
+        ('adult', data_loader.adult_dataset()),
+        ('cmc', data_loader.cmc_dataset()),
+        ('car', data_loader.car_dataset()),
         ('banknote', data_loader.banknote_dataset())
     ]
 
@@ -75,7 +75,7 @@ def _do_model_selection(data, strategy, model_file, selection_file):
         logger.info('Begin bandit selection on dataset {}'.format(data_name))
         start = time.time()
 
-        result = strategy.fit(train_x, train_y, 20)
+        result = strategy.fit(train_x, train_y, 1000)
         assert isinstance(result, RandomOptimization)
 
         elapsed_time = time.time() - start
