@@ -46,33 +46,36 @@ def bandit_test():
 
     # get data sets
     data_sets = [
-        ('adult', data_loader.adult_dataset()),
-        ('cmc', data_loader.cmc_dataset()),
-        ('car', data_loader.car_dataset()),
+        # ('adult', data_loader.adult_dataset()),
+        # ('cmc', data_loader.cmc_dataset()),
+        # ('car', data_loader.car_dataset()),
         ('banknote', data_loader.banknote_dataset())
     ]
 
     # test with the new function
     logger.info('==================New Method=====================')
-    bandit_selection = BanditModelSelection(optimizations, update_func='new')
-    _do_model_selection(data_sets, bandit_selection, 'new')
+    for theta in [0.01, 0.05, 0.1, 0.5]:
+        logger.info("Set theta = {}".format(theta))
+        bandit_selection = BanditModelSelection(optimizations, update_func='new', theta=theta)
+        _do_model_selection(data_sets, bandit_selection, 'model_new_{}'.format(theta), 'selection_new_{}'.format(theta))
     logger.info('==================New Method Done=====================')
 
     # test with traditional ucb function
     logger.info('==================Traditional UCB=====================')
     ucb_bandit_selection = BanditModelSelection(optimizations, update_func='ucb')
-    _do_model_selection(data_sets, ucb_bandit_selection, 'ucb')
+    _do_model_selection(data_sets, ucb_bandit_selection, 'model_ucb', 'selection_ucb_{}')
     logger.info('==================Traditional UCB Done=====================')
 
 
-def _do_model_selection(data, strategy, strategy_name):
+def _do_model_selection(data, strategy, model_file, selection_file):
     assert isinstance(strategy, BanditModelSelection)
 
     for data_name, (train_x, train_y) in data:
+
         logger.info('Begin bandit selection on dataset {}'.format(data_name))
         start = time.time()
 
-        result = strategy.fit(train_x, train_y, 1000)
+        result = strategy.fit(train_x, train_y, 20)
         assert isinstance(result, RandomOptimization)
 
         elapsed_time = time.time() - start
@@ -81,8 +84,8 @@ def _do_model_selection(data, strategy, strategy_name):
         logger.info('Selection result: \n{}\n\n'.format(result))
         logger.info('All models information:\n{}\n\n'.format(strategy.show_models()))
 
-        strategy.statistics().to_csv('log/models_{}_{}.csv'.format(data_name, strategy_name))
-        with open('log/selection_information_{}.csv'.format(strategy_name), 'a') as f:
+        strategy.statistics().to_csv('log/{}_{}.csv'.format(model_file, data_name), mode='a')
+        with open('log/{}_{}.csv'.format(selection_file, data_name), 'a') as f:
             count = 13  # used to represent selection count
             for record in strategy.param_change_info:
                 f.write('t = {}'.format(count))

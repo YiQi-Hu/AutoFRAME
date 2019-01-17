@@ -73,14 +73,16 @@ class RandomOptimization:
         self.square_mean = (previous_count * self.square_mean + new_eval_result ** 2) / (previous_count + 1)
 
 
-def _new_func(optimization, t, record=None):
-    ucb_item = np.sqrt(2 * np.log(t - 1) / optimization.count)
+def _new_func(optimization, t, theta=1, record=None):
+    third_term = np.sqrt(2 * np.log(t - 1) / optimization.count)
+    forth_term = (1 / theta) * third_term
     sqrt_mu_y = np.sqrt(optimization.square_mean)
-    result = optimization.mu + sqrt_mu_y + ucb_item + np.sqrt(ucb_item)
+    result = optimization.mu + (1 / theta) * sqrt_mu_y + third_term + forth_term
 
     if record is not None:
         assert isinstance(record, list)
-        record.append((optimization.name, optimization.mu, sqrt_mu_y, ucb_item + np.sqrt(ucb_item), result))
+        record.append((optimization.name, optimization.mu, sqrt_mu_y,
+                       third_term, forth_term, third_term + forth_term, result))
 
     return result
 
@@ -99,10 +101,11 @@ def _ucb_func(optimization, t, record=None):
 class BanditModelSelection:
     _update_functions = ['new', 'ucb']
 
-    def __init__(self, optimizations, update_func='new'):
+    def __init__(self, optimizations, update_func='new', theta=1):
         self.optimizations = optimizations
         self.update_func = self._get_update_function(update_func)
         self.param_change_info = []
+        self.theta = theta
 
     def fit(self, train_x, train_y, budget=200):
         self._clean()  # clean history data
@@ -123,12 +126,14 @@ class BanditModelSelection:
         return models_info
 
     def statistics(self):
-        data = [(o.mu, o.sigma, o.square_mean, o.count) for o in self.optimizations]
-        return pd.DataFrame(data=data, columns=['mu', 'sigma', 'mu_Y', 'budget'])
+        data = [(o.name, o.mu, o.sigma, o.square_mean, o.count, o.best_evaluation[EVALUATION_CRITERIA])
+                for o in self.optimizations]
+        return pd.DataFrame(data=data, columns=['name', 'mu', 'sigma', 'mu_Y', 'budget', 'best X'])
 
     def _wrap_selection_information(self, data):
         if self.update_func is _new_func:
-            return pd.DataFrame(data=data, columns=['name', 'mu', 'sqrt(mu_Y)', 'sum of last two', 'sum all'])
+            return pd.DataFrame(data=data, columns=['name', 'mu', 'sqrt(mu_Y)', 'third term',
+                                                    'forth term', 'sum of last two', 'sum all'])
         elif self.update_func is _ucb_func:
             return pd.DataFrame(data=data, columns=['name', 'mu', 'second_term', 'sum all'])
 
@@ -145,7 +150,12 @@ class BanditModelSelection:
 
     def _next_selection(self, current_count):
         selection_record = []  # used to record values of the terms of the equation for each models
-        values = [self.update_func(o, current_count, selection_record) for o in self.optimizations]
+        if self.update_func is _new_func:
+            values = [self.update_func(o, current_count, theta=self.theta, record=selection_record)
+                      for o in self.optimizations]
+        else:
+            values = [self.update_func(o, current_count, selection_record) for o in self.optimizations]
+
         self.param_change_info.append(self._wrap_selection_information(selection_record))
         return self.optimizations[np.argmax(values)]
 
