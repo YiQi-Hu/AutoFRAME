@@ -54,10 +54,10 @@ def bandit_test():
 
     # test with the new function
     logger.info('==================New Method=====================')
-    for theta in [0.01, 0.05, 0.1, 0.5]:
-        logger.info("Set theta = {}".format(theta))
-        bandit_selection = BanditModelSelection(optimizations, update_func='new', theta=theta)
-        _do_model_selection(data_sets, bandit_selection, 'model_new_{}'.format(theta), 'selection_new_{}'.format(theta))
+    theta = 0.01
+    logger.info("Set theta = {}".format(theta))
+    bandit_selection = BanditModelSelection(optimizations, update_func='new', theta=theta)
+    _do_model_selection(data_sets, bandit_selection, 'model_new_{}'.format(theta), 'selection_new_{}'.format(theta))
     logger.info('==================New Method Done=====================')
 
     # test with traditional ucb function

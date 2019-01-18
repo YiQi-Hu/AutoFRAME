@@ -76,7 +76,7 @@ class ModelEvaluator:
             except ValueError as e:  # temporally just catch ValueError
                 logger = logging.getLogger('bandit.evaluator')
                 logger.info("Parameter wrong, return -1, error message: {}".format(e))
-                return -1
+                return 0
 
             predictions = this_model.predict(valid_x)
 
