@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 from framework.random_search import random_search
+import random
 
 EVALUATION_CRITERIA = 'Accuracy'
 
@@ -73,11 +74,11 @@ class RandomOptimization:
         self.square_mean = (previous_count * self.square_mean + new_eval_result ** 2) / (previous_count + 1)
 
 
-def _new_func(optimization, t, theta=1, record=None):
+def _new_func(optimization, t, theta=1, record=None, factor=1):
     third_term = np.sqrt(2 * np.log(t - 1) / optimization.count)
     forth_term = (1 / theta) * third_term
     sqrt_mu_y = np.sqrt(optimization.square_mean)
-    result = optimization.mu + (1 / theta) * sqrt_mu_y + third_term + forth_term
+    result = factor * (optimization.mu + (1 / theta) * sqrt_mu_y) + third_term + forth_term
 
     if record is not None:
         assert isinstance(record, list)
@@ -99,13 +100,14 @@ def _ucb_func(optimization, t, record=None):
 
 
 class BanditModelSelection:
-    _update_functions = ['new', 'ucb']
+    _update_functions = ['new', 'ucb', 'random']
 
-    def __init__(self, optimizations, update_func='new', theta=1):
+    def __init__(self, optimizations, update_func='new', theta=1, factor=1):
         self.optimizations = optimizations
         self.update_func = self._get_update_function(update_func)
         self.param_change_info = []
         self.theta = theta
+        self.factor = factor
 
     def fit(self, train_x, train_y, budget=200):
         self._clean()  # clean history data
@@ -151,10 +153,13 @@ class BanditModelSelection:
     def _next_selection(self, current_count):
         selection_record = []  # used to record values of the terms of the equation for each models
         if self.update_func is _new_func:
-            values = [self.update_func(o, current_count, theta=self.theta, record=selection_record)
+            values = [self.update_func(o, current_count, theta=self.theta, record=selection_record, factor=self.factor)
                       for o in self.optimizations]
-        else:
+        elif self.update_func is _ucb_func:
             values = [self.update_func(o, current_count, selection_record) for o in self.optimizations]
+        else:
+            # random a result
+            return random.choice(self.optimizations)
 
         self.param_change_info.append(self._wrap_selection_information(selection_record))
         return self.optimizations[np.argmax(values)]
@@ -167,5 +172,7 @@ class BanditModelSelection:
             return _new_func
         elif update_func_name == 'ucb':
             return _ucb_func
+        elif update_func_name == 'random':
+            return None
         else:
             raise ValueError("Unknown update function: {}".format(self.update_func))

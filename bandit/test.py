@@ -55,16 +55,19 @@ def bandit_test():
     # test with the new function
     logger.info('==================New Method=====================')
     theta = 0.01
+    factor = 10
+
     logger.info("Set theta = {}".format(theta))
-    bandit_selection = BanditModelSelection(optimizations, update_func='new', theta=theta)
-    _do_model_selection(data_sets, bandit_selection, 'model_new_{}'.format(theta), 'selection_new_{}'.format(theta))
+    bandit_selection = BanditModelSelection(optimizations, update_func='new', theta=theta, factor=factor)
+    _do_model_selection(data_sets, bandit_selection, 'model_new_{}_{}'.format(theta, factor),
+                        'selection_new_{}_{}'.format(theta, factor))
     logger.info('==================New Method Done=====================')
 
     # test with traditional ucb function
-    logger.info('==================Traditional UCB=====================')
-    ucb_bandit_selection = BanditModelSelection(optimizations, update_func='ucb')
-    _do_model_selection(data_sets, ucb_bandit_selection, 'model_ucb', 'selection_ucb_{}')
-    logger.info('==================Traditional UCB Done=====================')
+    # logger.info('==================Traditional UCB=====================')
+    # ucb_bandit_selection = BanditModelSelection(optimizations, update_func='ucb')
+    # _do_model_selection(data_sets, ucb_bandit_selection, 'model_ucb', 'selection_ucb')
+    # logger.info('==================Traditional UCB Done=====================')
 
 
 def _do_model_selection(data, strategy, model_file, selection_file):
